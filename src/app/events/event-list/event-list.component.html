@@ -1,4 +1,11 @@
 <h1>This is a list of events</h1>
-<div *ngFor="let event of events">
-    {{event}}
+<div class="list-group">
+    <a href="#" class="list-group-item" *ngFor="let event of events">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">List group item heading</h5>
+        </div>
+        <p class="mb-1">
+            {{event}}
+        </p>
+    </a>
 </div>
