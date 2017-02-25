@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import { Event } from '../shared/event';
+import { Event } from '../shared/event.model';
+import { EventService } from '../shared/event.service';
+
 
 @Component({
     moduleId: module.id,
@@ -10,12 +12,10 @@ import { Event } from '../shared/event';
 export class EventListComponent  {
     events: Event[];
 
-    constructor () {
-        this.events = [
-            {id: 1, name: "Hello", description: "World", date: "Today"},
-            {id: 2, name: "Foo", description: "Bar", date: "Tomorrow"},
-            {id: 3, name: "Steve", description: "Jobs", date: "In a bit"},
-            {id: 4, name: "Bill", description: "Cosby", date: "At a later date"}
-        ];
+    constructor(private eventService: EventService) {}
+
+    ngOnInit() {
+        this.eventService.getEvents()
+            .then(events => this.events = events);
     }
 }
