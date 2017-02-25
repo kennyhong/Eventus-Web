@@ -11,11 +11,16 @@ import { EventService } from '../shared/event.service';
 })
 export class EventListComponent  {
     events: Event[];
+    selectedEvent: Event;
 
     constructor(private eventService: EventService) {}
 
     ngOnInit() {
         this.eventService.getEvents()
             .then(events => this.events = events);
+    }
+
+    onSelect(event: Event): void {
+        this.selectedEvent = event;
     }
 }
