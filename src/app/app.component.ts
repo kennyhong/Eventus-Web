@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { EventService } from './events/shared/event.service'
+import { EventService } from './shared/event.service'
 
 @Component({
   moduleId: module.id,
