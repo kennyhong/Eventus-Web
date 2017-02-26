@@ -1,7 +1,6 @@
-<h1>This is a list of events</h1>
-<h2 *ngIf="selectedEvent">The selected event is "{{selectedEvent.name}}"</h2>
+<h3>List of Events</h3>
 <div class="list-group">
-    <a href="#" class="list-group-item" *ngFor="let event of events" (click)="onSelect(event)">
+    <a *ngFor="let event of events" class="list-group-item" (click)="select(event)">
         <h3 class="list-group-item-heading">{{event.name}}</h3>
         <div class="list-group-item-text">{{event.description}}</div>
         <div class="list-group-item-text">{{event.date}}</div>

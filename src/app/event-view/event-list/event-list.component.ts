@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Event } from '../../shared/event.model';
 import { EventService } from '../../shared/event.service';
@@ -8,18 +8,13 @@ import { EventService } from '../../shared/event.service';
     selector: 'event-list',
     templateUrl: 'event-list.component.html'
 })
-export class EventListComponent implements OnInit {
-    events: Event[];
-    selectedEvent: Event;
+export class EventListComponent{
+    @Input() events: Event[];
+    @Output() onSelected = new EventEmitter<Event>();
 
-    constructor(private eventService: EventService) {}
+    constructor() {}
 
-    ngOnInit() {
-        this.eventService.getEvents()
-            .then(events => this.events = events);
-    }
-
-    onSelect(event: Event): void {
-        this.selectedEvent = event;
+    select(event: Event) {
+        this.onSelected.emit(event);
     }
 }

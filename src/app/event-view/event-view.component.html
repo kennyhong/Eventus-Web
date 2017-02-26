@@ -1,1 +1,12 @@
-<event-list></event-list>
+<div class="container">
+    <div class="row">
+        <event-list class="col-xs-4"
+            [events]="events"
+            (onSelected)="onSelected($event)">
+        </event-list>
+        <event-detail class="col-xs-8"
+            [selectedEvent]="selectedEvent">
+        </event-detail>
+    </div>
+    
+</div>

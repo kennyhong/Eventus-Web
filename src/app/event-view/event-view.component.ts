@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 import { Event } from '../shared/event.model';
 import { EventService } from '../shared/event.service';
-import { EventListComponent } from './event-list/event-list.component'
+import { EventListComponent } from './event-list/event-list.component';
+import { EventDetailComponent } from './event-detail/event-detail.component';
 
 @Component({
     moduleId: module.id,
@@ -19,7 +21,7 @@ export class EventViewComponent implements OnInit {
             .then(events => this.events = events);
     }
 
-    onSelect(event: Event): void {
+    onSelected(event: Event) {
         this.selectedEvent = event;
     }
 }
