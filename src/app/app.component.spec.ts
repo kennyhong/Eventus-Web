@@ -20,15 +20,16 @@ describe('AppComponent', function () {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     comp = fixture.componentInstance;
-    de = fixture.debugElement.query(By.css('h1'));
   });
 
   it('should create component', () => expect(comp).toBeDefined() );
 
-  it('should have expected <h1> text', () => {
+  it('should correctly display the navbar', () => {
     fixture.detectChanges();
-    const h1 = de.nativeElement;
-    expect(h1.innerText).toMatch(/angular/i,
-      '<h1> should say something about "Angular"');
+    let element = fixture.nativeElement;
+    expect(element.querySelectorAll('a')[0].innerText).toBe('EVENTUS');
+    expect(element.querySelectorAll('a')[1].innerText).toBe('New Event');
+    expect(element.querySelector('input').type).toBe('text');
+    expect(element.querySelector('button').type).toBe('submit');
   });
 });
