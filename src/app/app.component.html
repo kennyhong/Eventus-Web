@@ -11,60 +11,51 @@
             padding: 0.5em;
         }
         .navbar-custom {
-            background-color:#46BD79;
-            color:#ffffff;
-            border-radius:0;
-        }
-        .navbar-custom .navbar-nav > li > a {
-            color:#ffffff;
-        }
-        .navbar-custom .navbar-nav > .active > a, .navbar-nav > .active > a:hover, .navbar-nav > .active > a:focus {
+            background-color: #46BD79;
             color: #ffffff;
-            background-color:transparent;
+            border-radius: 0;
+        }     
+        .navbar-custom .navbar-nav > li > a {
+            color: #ffffff;
+        }
+        .navbar-custom .navbar-nav > .active > a,
+        .navbar-nav > .active > a:hover,
+        .navbar-nav > .active > a:focus {
+            color: #ffffff;
+            background-color: transparent;
         }
         .navbar-custom .navbar-brand {
-            color:#eeeeee;
+            color: #eeeeee;
         }
     </style>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-        $( function() {
-            $("#eventStart").datepicker();
-            $("#eventEnd").datepicker();
-        } );
-    </script>
 </head>
-    <body>
-        <nav class="navbar navbar-custom">
-            <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#"><b>EVENTUS</b></a>
-                </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <form class="navbar-form navbar-left">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search for event">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form>
-                    <ul class="nav navbar-nav">
-                        <li><a href="#">New Event</a></li>
-                    </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
-        <div class="jumbotron">
-            <event-view></event-view>
+<body>
+    <nav class="navbar navbar-custom navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"><b>EVENTUS</b></a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-left">
+                    <li><a href="#">New Event</a></li>
+                </ul>
+                <form class="navbar-form navbar-right">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search for event">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>           
+            </div>
         </div>
-    </body>
+    </nav>
+    <div class="container">
+        <event-view></event-view>
+    </div>
+</body>
 </html>
