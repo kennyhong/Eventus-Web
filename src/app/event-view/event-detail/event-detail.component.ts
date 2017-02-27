@@ -8,7 +8,7 @@ import { Event } from '../../shared/event.model';
     templateUrl: 'event-detail.component.html'
 })
 export class EventDetailComponent{
-    @Input() selectedEvent: Event;
+    @Input() event: Event;
 
     constructor() {}
 }

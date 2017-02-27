@@ -1,12 +1,12 @@
 <div class="container">
+    <h1>Your Events</h1>
     <div class="row">
-        <event-list class="col-xs-4"
-            [events]="events"
-            (onSelected)="onSelected($event)">
-        </event-list>
+            <event-list class="col-xs-4"
+                [events]="events"
+                (onSelected)="onSelected($event)">
+            </event-list>
         <event-detail class="col-xs-8"
-            [selectedEvent]="selectedEvent">
+            [event]="selectedEvent">
         </event-detail>
     </div>
-    
 </div>
