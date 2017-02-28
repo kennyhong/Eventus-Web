@@ -1,0 +1,120 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Entry Mockup Page</title>
+    <style>
+        #draggable {
+            width: 150px;
+            height: 150px;
+            padding: 0.5em;
+        }
+        .navbar-custom {
+            background-color:#229922;
+            color:#ffffff;
+            border-radius:0;
+        }
+        .navbar-custom .navbar-nav > li > a {
+            color:#fff;
+        }
+        .navbar-custom .navbar-nav > .active > a, .navbar-nav > .active > a:hover, .navbar-nav > .active > a:focus {
+            color: #ffffff;
+            background-color:transparent;
+        }
+        .navbar-custom .navbar-brand {
+            color:#eeeeee;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $( function() {
+            $("#eventStart").datepicker();
+            $("#eventEnd").datepicker();
+        } );
+    </script>
+</head>
+<body>
+        <nav class="navbar navbar-custom">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Eventus</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                        <li><a href="#">Link</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="navbar-form navbar-left">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">Link</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        <form>
+            <h1 align="center">Tell us a bit about your event!</h1>
+            <div class="form-group">
+                <label for="eventNameInput">Event Name</label>
+                <input type="text" class="form-control" id="eventNameInput" placeholder="Bailey's Mom">
+            </div>
+            <div class="form-group">
+                <label for="eventDescriptionInput">Description</label>
+                <input type="text" class="form-control" id="eventDescriptionInput" placeholder="Everyone's invited">
+            </div>
+            <br/><br/>
+            <div class="form-group">
+                <label for="eventStart">Start Date</label>
+                <input type="text" class="form-control" id="eventStart">
+            </div>
+            <div class="form-group">
+                <label for="eventEnd">End Date</label>
+                <input type="text" class="form-control" id="eventEnd">
+            </div>
+            <br />
+            <div align="center">
+                <button type="button" class="btn btn-success btn-lg" align="center">Next</button>
+            </div>
+        </form>
+
+
+</body>
+</html>
