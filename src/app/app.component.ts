@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { EventService } from './shared/event.service'
+import { MockEventService as EventService } from './shared/mock/mock-event.service'
 
 @Component({
   moduleId: module.id,

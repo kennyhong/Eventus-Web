@@ -1,6 +1,6 @@
-import { Event } from './event.model';
-import { Service } from './service.model';
-import { ServiceTag } from './service-tag.model';
+import { Event } from '../event.model';
+import { Service } from '../service.model';
+import { ServiceTag } from '../service-tag.model';
 
 const SERVICE_TAGS: ServiceTag[] = [
     {id: 1, name: "Service Tag 1"},
