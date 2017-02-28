@@ -55,10 +55,15 @@ describe('EventViewComponent', function () {
 
     it('should create component', () => expect(comp).toBeDefined());
 
-    it('should contain events', () => {
-        expect(comp.events).toBeDefined();
-        expect(comp.events).not.toBeNull();
-    });
+    it('should contain list of events', async(() => {
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+            fixture.detectChanges();
+            expect(comp.events).toBeDefined();
+            expect(comp.events).not.toBeNull();
+        });
+    }));
 
     // it('should correctly display the navbar', () => {
     //     fixture.detectChanges();
