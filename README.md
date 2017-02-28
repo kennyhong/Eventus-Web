@@ -22,5 +22,5 @@ npm start
 ## Running Tests
 Running tests is just as simple
 ```bash
-npm tests
+npm test
 ```
