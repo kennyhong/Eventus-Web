@@ -6,12 +6,12 @@ import { AppComponent }  from './app.component';
 import { EventViewComponent } from './event-view/event-view.component';
 import { EventListComponent } from './event-view/event-list/event-list.component';
 import { EventDetailComponent } from './event-view/event-detail/event-detail.component';
-import { NewEventComponent } from './new-event-view/new-event.component';
+import { NewEventComponent } from './new-event/new-event.component';
 
 const appRoutes: Routes = [
     {
         path: 'home',
-        component: AppComponent
+        component: EventViewComponent
     },
     {
         path: '',
@@ -19,8 +19,8 @@ const appRoutes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: '#', 
-        component: EventListComponent
+        path: 'new-event', 
+        component: NewEventComponent
     }
 ];
 
