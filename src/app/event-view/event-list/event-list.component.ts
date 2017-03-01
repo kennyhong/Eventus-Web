@@ -9,11 +9,11 @@ import { Event } from '../../shared/event.model';
 })
 export class EventListComponent{
     @Input() events: Event[];
-    @Output() onSelected = new EventEmitter<Event>();
+    @Output() selected = new EventEmitter<Event>();
 
     constructor() {}
 
     select(event: Event) {
-        this.onSelected.emit(event);
+        this.selected.emit(event);
     }
 }
