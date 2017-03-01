@@ -9,27 +9,35 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-describe('EventViewComponent', function () {
-    let de: DebugElement;
+let stubEvent = {
+    id: 1,
+    name: "Test Event",
+    description: "Test Description",
+    date: "1000-01-01 00:00:00",
+    services: [{
+        id: 1,
+        name: "Test Service",
+        cost: 100,
+        serviceTags:[{
+            id: 1,
+            name: "Test Service Tag"
+        }]
+    }]
+};
+
+class StubEventService {
+    stubEvents = [stubEvent, stubEvent];
+
+    getEvents () {
+        return Promise.resolve(this.stubEvents);
+    }
+}
+
+describe('EventViewComponent', () => {
     let comp: EventViewComponent;
     let fixture: ComponentFixture<EventViewComponent>;
+    let debugElement: DebugElement;
     let spy: jasmine.Spy;
-    let eventService: EventService;
-    let testEvents = [{
-        id: 1,
-        name: "Test Event",
-        description: "Test Description",
-        date: "1000-01-01 00:00:00",
-        services: [{
-            id: 1,
-            name: "Test Service",
-            cost: 100,
-            serviceTags:[{
-                id: 1,
-                name: "Test Service Tag"
-            }]
-        }]
-    }];
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -38,24 +46,18 @@ describe('EventViewComponent', function () {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [ EventService ]
+            providers: [ {provide: EventService, useClass: StubEventService} ]
         }).compileComponents();
     }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(EventViewComponent);
-        comp = fixture.componentInstance;
-
-        // Get the EventService actually injected into the component
-        eventService = fixture.debugElement.injector.get(EventService);
-
-        spy = spyOn(eventService, 'getEvents').and.returnValue(Promise.resolve(testEvents));
-        
+        comp = fixture.componentInstance;        
     });
 
     it('should create component', () => expect(comp).toBeDefined());
 
-    it('should contain list of events', async(() => {
+    it('should contain contain event array', async(() => {
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -65,12 +67,8 @@ describe('EventViewComponent', function () {
         });
     }));
 
-    // it('should correctly display the navbar', () => {
-    //     fixture.detectChanges();
-    //     let element = fixture.nativeElement;
-    //     expect(element.querySelectorAll('a')[0].innerText).toBe('EVENTUS');
-    //     expect(element.querySelectorAll('a')[1].innerText).toBe('New Event');
-    //     expect(element.querySelector('#navbar .navbar-form input').type).toBe('text');
-    //     expect(element.querySelector('#navbar .navbar-form button').type).toBe('submit');
-    // });
+    it('should change selectedEvent via onSelected()', () => {
+        comp.onSelected(stubEvent);
+        expect(comp.selectedEvent).toEqual(stubEvent);
+    });
 });
