@@ -5,4 +5,4 @@
     selector: 'new-event',
     templateUrl: 'new-event.component.html',
 })
-export class NewEventComponent {}
+export class NewEventComponent { }
