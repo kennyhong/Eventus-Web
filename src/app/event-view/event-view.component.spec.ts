@@ -57,13 +57,22 @@ describe('EventViewComponent', () => {
 
     it('should create component', () => expect(comp).toBeDefined());
 
-    it('should contain contain event array', async(() => {
+    it('should NOT have events before ngOnInit', () => {
+        expect(comp.events.length).toBe(0, 'should not have events before ngOnInit');
+    });
+
+    it('should NOT have events immediately after ngOnInit', () => {
+        fixture.detectChanges(); // runs initial lifecycle hooks
+
+        expect(comp.events.length).toBe(0, 'should not have events until service promise resolves');
+    });
+
+    it('should contain some events in events array', async(() => {
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
             fixture.detectChanges();
-            expect(comp.events).toBeDefined();
-            expect(comp.events).not.toBeNull();
+            expect(comp.events.length).toBeGreaterThan(0);
         });
     }));
 
