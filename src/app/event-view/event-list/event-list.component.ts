@@ -8,7 +8,7 @@ import { Event } from '../../shared/event.model';
     templateUrl: 'event-list.component.html'
 })
 export class EventListComponent{
-    @Input() events: Event[];
+    @Input() events: Event[] = [];
     @Output() selected = new EventEmitter<Event>();
 
     constructor() {}
