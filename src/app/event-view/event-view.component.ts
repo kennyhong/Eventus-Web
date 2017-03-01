@@ -11,7 +11,7 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
     templateUrl: 'event-view.component.html'
 })
 export class EventViewComponent implements OnInit {
-    events: Event[];
+    events: Event[] = [];
     selectedEvent: Event;
 
     constructor(private eventService: EventService) {}
