@@ -3,19 +3,17 @@
         max-height: 70vh;
     }
 </style>
-<div class="container">
-    <h1>Your Events</h1>
-    <div class="row">
-        <div class="col-xs-4 pre-scrollable">
-            <event-list
-                [events]="events"
-                (selected)="onSelected($event)">
-            </event-list>
-        </div>
-        <div class="col-xs-8 pre-scrollable">
-            <event-detail
-                [event]="selectedEvent">
-            </event-detail>
-        </div>
+<h1>Your Events</h1>
+<div class="row">
+    <div class="col-xs-4 pre-scrollable">
+        <event-list
+            [events]="events"
+            (selected)="onSelected($event)">
+        </event-list>
+    </div>
+    <div class="col-xs-8 pre-scrollable">
+        <event-detail
+            [event]="selectedEvent">
+        </event-detail>
     </div>
 </div>

@@ -8,4 +8,4 @@ import { MockEventService } from './shared/mock/mock-event.service';
   templateUrl: 'app.component.html',
   providers: [ {provide: EventService, useClass: MockEventService} ] 
 })
-export class AppComponent  { name = 'Angular'; }
+export class AppComponent { name = 'Angular'; }
