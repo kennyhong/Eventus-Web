@@ -11,6 +11,7 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
     templateUrl: 'event-view.component.html'
 })
 export class EventViewComponent implements OnInit {
+    errorMessage: string;
     events: Event[];
     selectedEvent: Event;
 
@@ -18,7 +19,9 @@ export class EventViewComponent implements OnInit {
 
     ngOnInit() {
         this.eventService.getEvents()
-            .then(events => this.events = events);
+            .subscribe(
+            events => this.events = events,
+            error => this.errorMessage = <any>error);
     }
 
     onSelected(event: Event) {
