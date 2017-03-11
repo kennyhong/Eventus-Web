@@ -37,6 +37,6 @@ app.get('/', function (req, res) {
 
 // For all GET requests, send back index.html
 // so that PathLocationStrategy can be used
-app.get('/*', function (req, res) {
-    res.sendFile(path.join(__dirname + '/src/index.html'));
-});
+//app.get('/*', function (req, res) {
+//    res.sendFile(path.join(__dirname + '/src/index.html'));
+//});
