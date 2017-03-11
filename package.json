@@ -3,13 +3,12 @@
   "version": "0.0.1",
   "description": "Development build of Eventus Web",
   "scripts": {
-    "start": "http-server",
-    "lint": "tslint \"src/**/*.ts\"",
-    "test": "ng test",
-    "pree2e": "webdriver-manager update",
-    "e2e": "protractor",
-    "preinstall": "npm install -g http-server",
-    "postinstall": "ng build && mv dist/* ."
+    "start": "concurrently \"tsc -w\" \"nodemon ./bin/www\" ",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "prod": "NODE_ENV=production ./bin/www",
+    "build:prod": "node bin/bundler.js --prod",
+    "postinstall": "npm run build:prod"
   },
   "keywords": [],
   "author": "Mitchell Engen, Marvin de Leon",
