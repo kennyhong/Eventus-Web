@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Event } from '../shared/event.model';
-import { MockEventService as EventService } from '../shared/mock/mock-event.service';
+import { EventService } from '../shared/services/event.service';
 import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
 
 @Component({
     moduleId: module.id,
     selector: 'event-view',
-    templateUrl: 'event-view.component.html'
+    templateUrl: 'event-view.component.html',
+    providers: [EventService]
 })
 export class EventViewComponent implements OnInit {
     errorMessage: string;
