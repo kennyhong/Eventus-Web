@@ -28,6 +28,13 @@ const forceSSL = function () {
 // middleware
 app.use(forceSSL());
 
+app.get('/', function (req, res) {
+    res.writeHead(200, {
+        'Content-type': 'text/html'
+    });
+    res.end(index);
+});
+
 // For all GET requests, send back index.html
 // so that PathLocationStrategy can be used
 app.get('/*', function (req, res) {
