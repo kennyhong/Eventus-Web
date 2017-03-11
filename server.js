@@ -27,6 +27,7 @@ const forceSSL = function () {
 // to use the forceSSL
 // middleware
 app.use(forceSSL());
+app.use('/node_modules', express.static(__dirname + '/node_modules'));
 
 app.get('/', function (req, res) {
     res.writeHead(200, {
