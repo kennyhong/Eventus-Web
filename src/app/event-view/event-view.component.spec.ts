@@ -1,8 +1,9 @@
 import { Event } from '../shared/event.model';
-import { EventService } from '../shared/event.service';
+import { EventService } from '../shared/services/event.service';
 import { EventViewComponent } from './event-view.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
+import { HttpModule } from '@angular/http';
 
 import { } from '@types/jasmine';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
@@ -38,6 +39,7 @@ describe('EventViewComponent', () => {
     let fixture: ComponentFixture<EventViewComponent>;
     let debugElement: DebugElement;
     let spy: jasmine.Spy;
+    var originalTimeout;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -46,13 +48,18 @@ describe('EventViewComponent', () => {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [ {provide: EventService, useClass: StubEventService} ]
+            providers: [{ provide: EventService, useClass: StubEventService }],
+            imports: [
+                HttpModule
+            ]
         }).compileComponents();
     }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(EventViewComponent);
-        comp = fixture.componentInstance;        
+        comp = fixture.componentInstance;
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;   
     });
 
     it('should create component', () => expect(comp).toBeDefined());
@@ -79,5 +86,9 @@ describe('EventViewComponent', () => {
     it('should change selectedEvent via onSelected()', () => {
         comp.onSelected(stubEvent);
         expect(comp.selectedEvent).toEqual(stubEvent);
+    });
+
+    afterEach(function () {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 });
