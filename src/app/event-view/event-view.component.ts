@@ -13,7 +13,7 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
 })
 export class EventViewComponent implements OnInit {
     errorMessage: string;
-    events: Event[];
+    events: Event[] = [];
     selectedEvent: Event;
 
     constructor(private eventService: EventService) {}
