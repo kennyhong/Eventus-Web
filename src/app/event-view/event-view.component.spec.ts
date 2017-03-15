@@ -39,7 +39,7 @@ describe('EventViewComponent', () => {
     let fixture: ComponentFixture<EventViewComponent>;
     let debugElement: DebugElement;
     let spy: jasmine.Spy;
-    var originalTimeout;
+    // var originalTimeout;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -58,7 +58,7 @@ describe('EventViewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(EventViewComponent);
         comp = fixture.componentInstance;
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        // originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;   
     });
 
@@ -88,7 +88,7 @@ describe('EventViewComponent', () => {
         expect(comp.selectedEvent).toEqual(stubEvent);
     });
 
-    afterEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    });
+    // afterEach(function () {
+    //     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    // });
 });
