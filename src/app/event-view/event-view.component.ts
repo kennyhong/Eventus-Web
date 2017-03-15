@@ -21,8 +21,8 @@ export class EventViewComponent implements OnInit {
     ngOnInit() {
         this.eventService.getEvents()
             .subscribe(
-            events => this.events = events,
-            error => this.errorMessage = <any>error);
+                events => this.events = events,
+                error => this.errorMessage = <any>error);
     }
 
     onSelected(event: Event) {
