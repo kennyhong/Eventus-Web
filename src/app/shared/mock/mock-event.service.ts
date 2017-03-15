@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 
-import { EventService } from '../event.service';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
+
+import { EventService } from '../services/event.service';
 import { EVENTS } from './mock-events';
 
 @Injectable()
 export class MockEventService extends EventService {
     getEvents() {
-        return Promise.resolve(EVENTS);
+        return new Observable<Event[]>();
+        // return Promise.resolve(EVENTS);
     }
 }
