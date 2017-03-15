@@ -10,7 +10,9 @@ import { Event } from '../event.model';
 @Injectable()
 export class EventService {
     private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
-    constructor(private http: Http) { }
+    
+    constructor(private http: Http) {}
+
     getEvents(): Observable<Event[]> {
         return this.http.get(this.eventsUrl)
             .map(this.extractData)
