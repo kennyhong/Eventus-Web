@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MockEventService as EventService } from './shared/mock/mock-event.service'
+import { EventService } from './shared/services/event.service';
 
 @Component({
   moduleId: module.id,
@@ -7,4 +7,4 @@ import { MockEventService as EventService } from './shared/mock/mock-event.servi
   templateUrl: 'app.component.html',
   providers: [ EventService ] 
 })
-export class AppComponent  { name = 'Angular'; }
+export class AppComponent { name = 'Angular'; }
