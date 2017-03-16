@@ -5,6 +5,9 @@ import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
 import { HttpModule } from '@angular/http';
 
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of'
+
 import { } from '@types/jasmine';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -26,11 +29,10 @@ let stubEvent = {
     }]
 };
 
-class StubEventService {
+class StubEventService{
     stubEvents = [stubEvent, stubEvent];
-
-    getEvents () {
-        return Promise.resolve(this.stubEvents);
+    getEvents() {
+        return Observable.of(this.stubEvents);
     }
 }
 
@@ -38,8 +40,6 @@ describe('EventViewComponent', () => {
     let comp: EventViewComponent;
     let fixture: ComponentFixture<EventViewComponent>;
     let debugElement: DebugElement;
-    let spy: jasmine.Spy;
-    // var originalTimeout;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -48,7 +48,7 @@ describe('EventViewComponent', () => {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [{ provide: EventService, useClass: StubEventService }],
+            providers: [ {provide: EventService, useClass: StubEventService} ],
             imports: [
                 HttpModule
             ]
@@ -58,20 +58,12 @@ describe('EventViewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(EventViewComponent);
         comp = fixture.componentInstance;
-        // originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;   
     });
 
     it('should create component', () => expect(comp).toBeDefined());
 
     it('should NOT have events before ngOnInit', () => {
         expect(comp.events.length).toBe(0, 'should not have events before ngOnInit');
-    });
-
-    it('should NOT have events immediately after ngOnInit', () => {
-        fixture.detectChanges(); // runs initial lifecycle hooks
-
-        expect(comp.events.length).toBe(0, 'should not have events until service promise resolves');
     });
 
     it('should contain some events in events array', async(() => {
@@ -87,8 +79,4 @@ describe('EventViewComponent', () => {
         comp.onSelected(stubEvent);
         expect(comp.selectedEvent).toEqual(stubEvent);
     });
-
-    // afterEach(function () {
-    //     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    // });
 });

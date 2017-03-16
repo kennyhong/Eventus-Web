@@ -9,7 +9,6 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
     moduleId: module.id,
     selector: 'event-view',
     templateUrl: 'event-view.component.html',
-    providers: [EventService]
 })
 export class EventViewComponent implements OnInit {
     errorMessage: string;
