@@ -9,7 +9,7 @@ import { Event } from '../event.model';
 
 @Injectable()
 export class EventService {
-    private eventsUrl = '//eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
+    private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
     
     constructor(private http: Http) {}
 
