@@ -9,6 +9,13 @@ app.use(express.static(__dirname + '/src'));
 // Heroku port
 app.listen(process.env.PORT || 8080);
 
+window.onload = function () {
+    $(function () {
+        if (window.location.protocol === "https:")
+            window.location.protocol = "http";
+    });
+}
+
 // If an incoming request uses
 // a protocol other than HTTPS,
 // redirect that request to the
