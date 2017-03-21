@@ -24,8 +24,8 @@ const forceHTTP = function () {
     }
 }
 
-app.use(forceHTTP);
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
+app.use(forceHTTP);
 
 app.get('/', function (req, res) {
     res.writeHead(200, {
