@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { EventViewComponent } from './event-view/event-view.component';
 import { EventListComponent } from './event-view/event-list/event-list.component';
 import { EventDetailComponent } from './event-view/event-detail/event-detail.component';
-import { NewEventComponent } from './new-event/new-event.component';
+import { EventCreateComponent } from './event-create/event-create.component';
 
 const appRoutes: Routes = [
     {
@@ -20,12 +20,12 @@ const appRoutes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'new-event',
-        component: NewEventComponent
+        path: 'event-create',
+        component: EventCreateComponent
     },
     {
         path: 'app/events',
-        component: NewEventComponent
+        component: EventCreateComponent
     }
 ];
 
@@ -41,7 +41,7 @@ const appRoutes: Routes = [
         EventViewComponent,
         EventListComponent,
         EventDetailComponent,
-        NewEventComponent
+        EventCreateComponent
     ],
     bootstrap: [AppComponent]
 })
