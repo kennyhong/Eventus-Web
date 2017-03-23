@@ -7,7 +7,18 @@ import { EventService } from '../shared/services/event.service';
     templateUrl: 'event-create.component.html',
 })
 export class EventCreateComponent {
-    constructor(private eventService: EventService) {
+    event = {
+        name: "",
+        description: "",
+        date: ""
+    };
+
+    constructor(private eventService: EventService) { }
+
+    createEvent() {
 
     }
+
+    //TODO: get rid of this when we're done
+    get diagnostic() { return JSON.stringify(this.event); }
 }
