@@ -40,7 +40,5 @@ describe('AppComponent', function () {
     let element = fixture.nativeElement;
     expect(element.querySelectorAll('a')[0].innerText).toBe('EVENTUS');
     expect(element.querySelectorAll('a')[1].innerText).toBe('New Event');
-    expect(element.querySelector('#navbar .navbar-form input').type).toBe('text');
-    expect(element.querySelector('#navbar .navbar-form button').type).toBe('submit');
   });
 });

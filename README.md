@@ -14,9 +14,9 @@ Install all npm dependencies by running
 npm install
 ```
 
-Then just running Eventus is as simple as
+Then just running Eventus locally is as simple as
 ```bash
-npm start
+npm run start:dev
 ```
 
 ## Running Tests
@@ -24,3 +24,14 @@ Running tests is just as simple
 ```bash
 npm test
 ```
+
+## Deploying the application
+Eventus-Web is hosted on Heroku. To deploy, commit your code to master and enter
+```bash
+git push heroku master
+```
+Then simply enter
+```bash
+heroku open
+```
+To open the website
