@@ -11,20 +11,16 @@ import { EventCreateComponent } from './event-create/event-create.component';
 
 const appRoutes: Routes = [
     {
-        path: 'home',
-        component: EventViewComponent
-    },
-    {
         path: '',
         redirectTo: '/home',
         pathMatch: 'full'
     },
     {
-        path: 'event-create',
-        component: EventCreateComponent
+        path: 'home',
+        component: EventViewComponent
     },
     {
-        path: 'app/events',
+        path: 'event-create',
         component: EventCreateComponent
     }
 ];
