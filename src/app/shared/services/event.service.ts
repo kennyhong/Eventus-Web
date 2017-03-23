@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
-import { Event } from '../event.model';
+import { Event } from '../models/event.model';
 
 @Injectable()
 export class EventService {

@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
 
-import { Event } from '../../shared/event.model';
+import { Event } from '../../shared/models/event.model';
 
 @Component({
     moduleId: module.id,
     selector: 'event-detail',
     templateUrl: 'event-detail.component.html'
 })
-export class EventDetailComponent{
+export class EventDetailComponent {
     @Input() event: Event;
 
     constructor() {}

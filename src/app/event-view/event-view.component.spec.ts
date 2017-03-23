@@ -1,4 +1,4 @@
-import { Event } from '../shared/event.model';
+import { Event } from '../shared/models/event.model';
 import { EventService } from '../shared/services/event.service';
 import { EventViewComponent } from './event-view.component';
 import { EventListComponent } from './event-list/event-list.component';
