@@ -17,7 +17,7 @@ export class EventCreateComponent {
 
     createEvent() {
         // console.log("They watch me send, they watch me nay nay!");
-        this.eventService.addEvent(event)
+        this.eventService.addEvent(this.event)
             .subscribe(
                 event => console.log(event),
                 error => console.log(error)

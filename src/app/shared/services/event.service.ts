@@ -20,11 +20,19 @@ export class EventService {
             .catch(this.handleError);
     }
 
+    getEvent(id: Number): Observable<Event> {
+        return this.http.get(this.eventsUrl + "/" + id)
+            .map(this.extractData)
+            .catch(this.handleError);
+    }
+
     addEvent(event: Object): Observable<Event> {
-        let headers = new Headers({ 'Content_type': 'application/json' });
+        let headers = new Headers({ 'Content-type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
 
-        return this.http.post(this.eventsUrl, event, options)
+        let json = JSON.stringify(event);
+
+        return this.http.post(this.eventsUrl, json, options)
             .map(this.extractData)
             .catch(this.handleError);
     }
