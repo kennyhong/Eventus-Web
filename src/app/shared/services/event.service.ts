@@ -4,6 +4,7 @@ import { Headers, Http, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/observable/throw';
 
 import { Event } from '../models/event.model';
 
@@ -19,7 +20,7 @@ export class EventService {
             .catch(this.handleError);
     }
 
-    addEvent(event: Event): Observable<Event> {
+    addEvent(event: Object): Observable<Event> {
         let headers = new Headers({ 'Content_type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
 
