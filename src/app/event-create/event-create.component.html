@@ -1,21 +1,28 @@
 ﻿<h1 align="center">Tell us a bit about your event!</h1>
 {{diagnostic}}
+<style>
 
+</style>
 <form (ngSubmit)="createEvent()" #eventForm="ngForm">
     <div class="form-group">
         <label for="eventNameInput">Event Name</label>
         <input type="text" class="form-control" id="eventNameInput"
+            required
             name="name" [(ngModel)]="event.name" placeholder="Birthday Bash">
     </div>
     <div class="form-group">
         <label for="eventDescriptionInput">Description</label>
-        <textarea rows="4" cols="50" class="form-control" id="eventDescriptionInput"
-            name="description" [(ngModel)]="event.description" placeholder="Everyone's invited"></textarea>
+        <textarea class="form-control" id="eventDescriptionInput"
+            required
+            name="description" [(ngModel)]="event.description"
+            rows="4" cols="50" placeholder="Everyone's invited"></textarea>
     </div>
     <div class="form-group">
         <label for="eventStart">Start Date</label>
-        <input type="text" class="form-control" id="eventStart"
-            name="date" [(ngModel)]="event.date">
+        <input type="date" class="form-control" id="eventStart"
+            required
+            name="date" #date
+            (blur)="formatDate(date.value)">
     </div>
     <!--<div align="left">
         <button type="button" class="btn btn-default btn-lg" align="center">Add Services</button>

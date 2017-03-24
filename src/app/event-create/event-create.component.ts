@@ -23,6 +23,10 @@ export class EventCreateComponent {
             );
     }
 
+    formatDate(date: String){
+        this.event.date = date + " 00:00:00";
+    }
+
     //TODO: get rid of this when we're done
     get diagnostic() { return JSON.stringify(this.event); }
 }
