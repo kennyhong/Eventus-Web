@@ -19,6 +19,12 @@ export class EventService {
             .catch(this.handleError);
     }
 
+    getEvent(id: Number): Observable<Event> {
+        return this.http.get(this.eventsUrl + "/" + id)
+            .map(this.extractData)
+            .catch(this.handleError);
+    }
+
     addEvent(event: Event): Observable<Event> {
         let headers = new Headers({ 'Content_type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
