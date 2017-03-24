@@ -1,31 +1,42 @@
-﻿<h1 align="center">Tell us a bit about your event!</h1>
-{{diagnostic}}
-<style>
-
-</style>
-<form (ngSubmit)="createEvent()" #eventForm="ngForm">
-    <div class="form-group">
-        <label for="eventNameInput">Event Name</label>
-        <input type="text" class="form-control" id="eventNameInput"
-            required
-            name="name" [(ngModel)]="event.name" placeholder="Birthday Bash">
+﻿<!--{{diagnostic}}-->
+<div [hidden]="submitted">
+    <h2 align="center">Tell us a bit about your event!</h2>
+    <form (ngSubmit)="createEvent()" #eventForm="ngForm">
+        <div class="form-group">
+            <label for="eventNameInput">Event Name</label>
+            <input type="text" class="form-control" id="eventNameInput"
+                required
+                name="name" [(ngModel)]="event.name" placeholder="Birthday Bash">
+        </div>
+        <div class="form-group">
+            <label for="eventDescriptionInput">Description</label>
+            <textarea class="form-control" id="eventDescriptionInput"
+                required
+                name="description" [(ngModel)]="event.description"
+                rows="4" cols="50" placeholder="Everyone's invited"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="eventStart">Start Date</label>
+            <input type="date" class="form-control" id="eventStart"
+                required
+                name="date" #date
+                (blur)="formatDate(date.value)">
+        </div>
+        <input type="submit" class="btn btn-default btn-lg" value="Create Event">
+    </form>
+</div>
+<div [hidden]="!submitted">
+    <h2>Your new event</h2>
+    <div class="row">
+        <label class="col-xs-2">Name</label>
+        <div class="col-xs-10">{{createdEvent.name}}</div>     
     </div>
-    <div class="form-group">
-        <label for="eventDescriptionInput">Description</label>
-        <textarea class="form-control" id="eventDescriptionInput"
-            required
-            name="description" [(ngModel)]="event.description"
-            rows="4" cols="50" placeholder="Everyone's invited"></textarea>
+    <div class="row">
+        <label class="col-xs-2">Description</label>
+        <div class="col-xs-10">{{createdEvent.description}}</div>
     </div>
-    <div class="form-group">
-        <label for="eventStart">Start Date</label>
-        <input type="date" class="form-control" id="eventStart"
-            required
-            name="date" #date
-            (blur)="formatDate(date.value)">
+    <div class="row">
+        <label class="col-xs-2">Date</label>
+        <div class="col-xs-10">{{createdEvent.date}}</div>
     </div>
-    <!--<div align="left">
-        <button type="button" class="btn btn-default btn-lg" align="center">Add Services</button>
-    </div>-->
-    <input type="submit" class="btn btn-default btn-lg" value="Create Event">
-</form>
+</div>
