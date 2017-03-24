@@ -26,7 +26,7 @@ export class EventService {
     }
 
     addEvent(event: Event): Observable<Event> {
-        let headers = new Headers({ 'Content_type': 'application/json' });
+        let headers = new Headers({ 'Content-type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
 
         return this.http.post(this.eventsUrl, event, options)
