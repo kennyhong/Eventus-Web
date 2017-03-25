@@ -8,9 +8,9 @@ import { EventService } from '../shared/services/event.service';
     templateUrl: 'event-create.component.html',
 })
 export class EventCreateComponent {
-    private submitted: Boolean;
-    private eventParams: EventParams;
-    private createdEvent: Event;
+    submitted: Boolean;
+    eventParams: EventParams;
+    createdEvent: Event;
 
     constructor(private eventService: EventService) {
         this.submitted = false;
@@ -29,7 +29,7 @@ export class EventCreateComponent {
             );
     }
 
-    private formatDate(date: String) {
+    formatDate(date: String) {
         this.eventParams.date = date + ' 00:00:00';
     }
 }
