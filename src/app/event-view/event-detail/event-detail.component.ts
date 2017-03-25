@@ -18,9 +18,7 @@ export class EventDetailComponent {
     deleteEvent(id: number) {
         this.eventService.deleteEvent(String(id))
             .subscribe(
-            error => this.errorMessage = <any>error,
-            success => { this.reloadEvents.emit(); });
-
-        
+            success => { this.reloadEvents.emit(); },
+            error => this.errorMessage = <any>error);
     }
 }

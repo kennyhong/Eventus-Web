@@ -30,8 +30,6 @@ export class EventViewComponent implements OnInit {
             .subscribe(
             events => this.events = events,
             error => this.errorMessage = <any>error);
-
-        //location.reload();
     }
 
     onSelected(event: Event) {
