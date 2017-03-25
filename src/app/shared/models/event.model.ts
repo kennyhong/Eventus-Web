@@ -11,5 +11,17 @@ export interface EventParams {
 }
 
 export class Event {
-    constructor(id: Number, name: String, description: String, date: String, services: Service[]) {}
+    id: Number;
+    name: String;
+    description: String;
+    date: String;
+    services: Service[];
+
+    constructor(id: Number, name: String, description: String, date: String, services: Service[]) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.services = services;
+    }
 }
