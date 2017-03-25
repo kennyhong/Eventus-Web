@@ -1,3 +1,10 @@
+<style>
+    .btn-text {
+        text-align: center;
+        margin: auto;
+    }
+</style>
+
 <div *ngIf="event !== undefined" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">{{event.name}}</h3>
@@ -14,6 +21,11 @@
                     {{serviceTag.name}}
                 </button>
             </div>
+        </div>
+        <div align="right">
+            <button type="button" class="btn btn-danger" (click)="deleteEvent(event.id)">
+                <p class="btn-text" style="font-size:10px">Delete</p>
+            </button>
         </div>
     </div>
 </div>
