@@ -39,6 +39,6 @@ describe('AppComponent', function () {
     fixture.detectChanges();
     let element = fixture.nativeElement;
     expect(element.querySelectorAll('a')[0].innerText).toBe('EVENTUS');
-    expect(element.querySelectorAll('a')[1].innerText).toBe('New Event');
+    expect(element.querySelectorAll('a')[1].innerText).toBe('Create Event');
   });
 });
