@@ -5,7 +5,7 @@ import { DebugElement } from '@angular/core';
 
 // import { click } from '../../../../testing/index';
 
-import { Event } from '../../shared/event.model';
+import { Event } from '../../shared/models/event.model';
 import { EventListComponent } from './event-list.component';
 
 

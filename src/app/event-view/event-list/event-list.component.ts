@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Event } from '../../shared/event.model';
+import { Event } from '../../shared/models/event.model';
 
 @Component({
     moduleId: module.id,
