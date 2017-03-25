@@ -14,4 +14,12 @@ export class Event {
         this.date = "";
         this.services = [];
     }
+
+    constructor(id: Number, name: String, description: String, date: String, services: Service[]) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.services = services
+    }
 }
