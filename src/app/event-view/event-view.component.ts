@@ -24,6 +24,16 @@ export class EventViewComponent implements OnInit {
                 error => this.errorMessage = <any>error);
     }
 
+    //Need separate function for event emitter in event-detail
+    reloadEvents() {
+        this.eventService.getEvents()
+            .subscribe(
+            events => this.events = events,
+            error => this.errorMessage = <any>error);
+
+        //location.reload();
+    }
+
     onSelected(event: Event) {
         this.selectedEvent = event;
     }

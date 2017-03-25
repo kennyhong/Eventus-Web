@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Event } from '../../shared/models/event.model';
 import { EventService } from '../../shared/services/event.service';
@@ -10,6 +10,7 @@ import { EventService } from '../../shared/services/event.service';
 })
 export class EventDetailComponent {
     @Input() event: Event;
+    @Output() reloadEvents = new EventEmitter();
     errorMessage: string;
 
     constructor(private eventService: EventService) { }
@@ -17,6 +18,9 @@ export class EventDetailComponent {
     deleteEvent(id: number) {
         this.eventService.deleteEvent(String(id))
             .subscribe(
-            error => this.errorMessage = <any>error);
+            error => this.errorMessage = <any>error,
+            success => { this.reloadEvents.emit(); });
+
+        
     }
 }
