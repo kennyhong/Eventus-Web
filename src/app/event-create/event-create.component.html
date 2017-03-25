@@ -5,13 +5,13 @@
             <label for="eventNameInput">Event Name</label>
             <input type="text" class="form-control" id="eventNameInput"
                 required
-                name="name" [(ngModel)]="event.name" placeholder="Birthday Bash">
+                name="name" [(ngModel)]="eventParams.name" placeholder="Birthday Bash">
         </div>
         <div class="form-group">
             <label for="eventDescriptionInput">Description</label>
             <textarea class="form-control" id="eventDescriptionInput"
                 required
-                name="description" [(ngModel)]="event.description"
+                name="description" [(ngModel)]="eventParams.description"
                 rows="4" cols="50" placeholder="Everyone's invited"></textarea>
         </div>
         <div class="form-group">

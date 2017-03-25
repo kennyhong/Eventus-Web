@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { Event } from '../shared/models/event.model';
+import { Event, EventParams } from '../shared/models/event.model';
 import { EventService } from '../shared/services/event.service';
 
 @Component({
@@ -8,19 +8,18 @@ import { EventService } from '../shared/services/event.service';
     templateUrl: 'event-create.component.html',
 })
 export class EventCreateComponent {
-    private submitted = false;
-    private event = {
-        name: "",
-        description: "",
-        date: ""
-    };
+    private submitted: Boolean;
+    private eventParams: EventParams;
+    private createdEvent: Event;
 
-    private createdEvent: Event = new Event();
-
-    constructor(private eventService: EventService) { }
+    constructor(private eventService: EventService) {
+        this.submitted = false;
+        this.eventParams = {name: '', description: '', date: ''};
+        this.createdEvent = new Event(-1, '', '', '', []);
+    }
 
     createEvent() {
-        this.eventService.addEvent(this.event)
+        this.eventService.addEvent(this.eventParams)
             .subscribe(
                 event => {
                     this.createdEvent = event;
@@ -30,7 +29,7 @@ export class EventCreateComponent {
             );
     }
 
-    private formatDate(date: String){
-        this.event.date = date + " 00:00:00";
+    private formatDate(date: String) {
+        this.eventParams.date = date + ' 00:00:00';
     }
 }
