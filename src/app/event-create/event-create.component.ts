@@ -30,7 +30,7 @@ export class EventCreateComponent {
             );
     }
 
-    formatDate(date: String){
+    private formatDate(date: String){
         this.event.date = date + " 00:00:00";
     }
 }
