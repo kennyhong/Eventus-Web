@@ -63,4 +63,21 @@ describe('EventCreateComponent', () => {
         comp.formatDate(date);
         expect(comp.eventParams.date).toEqual(date + ' 00:00:00');
     });
+
+    it('should not create event with uninitialized parameters', () => {
+        let uninitializedParams: EventParams;
+        comp.eventParams = uninitializedParams;
+
+        comp.createEvent();
+        expect(comp.submitted).toEqual(false);
+
+    });
+
+    it('should not create event with malformed date', () => {
+        let date = '20000-01-01';
+        comp.formatDate(date);
+
+        comp.createEvent();
+        expect(comp.submitted).toEqual(false);
+    });
 });
