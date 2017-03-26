@@ -8,7 +8,7 @@ import { EventService } from '../shared/services/event.service';
     templateUrl: 'event-create.component.html',
 })
 export class EventCreateComponent {
-    submitted: Boolean;
+    submitted: boolean;
     eventParams: EventParams;
     createdEvent: Event;
 
@@ -19,6 +19,10 @@ export class EventCreateComponent {
     }
 
     createEvent() {
+        if (this.eventParams === undefined) {
+            // TODO: give more user feedback that the event wasn't created
+            return;
+        }
         this.eventService.addEvent(this.eventParams)
             .subscribe(
                 event => {
@@ -29,7 +33,11 @@ export class EventCreateComponent {
             );
     }
 
-    formatDate(date: String) {
+    formatDate(date: string) {
+        let format = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+        if (!format.test(date)) {
+            return;
+        }
         this.eventParams.date = date + ' 00:00:00';
     }
 }
