@@ -25,12 +25,31 @@ let stubEvent = {
     }]
 };
 
+let stubEvent2 = {
+    id: 2,
+    name: "Another Test Event",
+    description: "Another Test Description",
+    date: "2000-02-02 00:00:00",
+    services: [{
+        id: 1,
+        name: "Another Test Service",
+        cost: 100,
+        serviceTags: [{
+            id: 1,
+            name: "Another Test Service Tag"
+        }]
+    }]
+};
+
+let stubEvents = [stubEvent, stubEvent2]
 
 class StubEventService {
-    stubEvents = [stubEvent]
+    
 
-    deleteEvent(id: string): Observable<Event> {
-        return Observable.of();
+    //Removes event with the given ID
+    deleteEvent(id: string): Observable<Event[]> {
+        stubEvents.splice(Number(id), 1);
+        return Observable.of(stubEvents);
     }
 }
 
@@ -53,12 +72,14 @@ describe('EventDetailComponent', () => {
 
     it('should create component', () => expect(comp).toBeDefined());
 
-    it('can create a new event', async(() => {
+    it('can delete an event', async(() => {
+        expect(stubEvents.length).toEqual(2);
+
         fixture.detectChanges();
         comp.deleteEvent(1);
 
         fixture.whenStable().then(() => {
-
+            expect(stubEvents.length).toEqual(1);
         });
     }));
 });
