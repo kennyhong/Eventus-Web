@@ -19,10 +19,11 @@ export class EventCreateComponent {
     }
 
     createEvent() {
-        if (this.eventParams === undefined) {
-            // TODO: give more user feedback that the event wasn't created
+        // TODO: give more user feedback that the event wasn't created
+        if (!this.validParams()) {
             return;
         }
+
         this.eventService.addEvent(this.eventParams)
             .subscribe(
                 event => {
@@ -33,11 +34,21 @@ export class EventCreateComponent {
             );
     }
 
-    formatDate(date: string) {
-        let format = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
-        if (!format.test(date)) {
-            return;
+    private validParams(): boolean {
+        if (this.eventParams === undefined) {
+            return false;
+        } else {
+            for (let key in this.eventParams) {
+                if (this.eventParams[key] === '') {
+                    return false;
+                }
+            }
+
+            let pattern = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+            if (!pattern.test(this.eventParams.date)) {
+                return false;
+            }
         }
-        this.eventParams.date = date + ' 00:00:00';
+        return true;
     }
 }
