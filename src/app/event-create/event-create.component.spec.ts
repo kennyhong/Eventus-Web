@@ -41,7 +41,7 @@ describe('EventCreateComponent', () => {
 
     it('should create component', () => expect(comp).toBeDefined());
 
-    it('can create a new event', async(() => {
+    it('can create an event with valid parameters', async(() => {
         fixture.detectChanges();
         comp.eventParams = stubEventParams;
         comp.createEvent();
