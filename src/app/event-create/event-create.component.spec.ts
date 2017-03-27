@@ -58,12 +58,6 @@ describe('EventCreateComponent', () => {
         });
     }));
 
-    it('can format a date properly', () => {
-        let date = '2000-01-01';
-        comp.formatDate(date);
-        expect(comp.eventParams.date).toEqual(date + ' 00:00:00');
-    });
-
     it('should not create event with uninitialized parameters', () => {
         let uninitializedParams: EventParams;
         comp.eventParams = uninitializedParams;
@@ -73,9 +67,18 @@ describe('EventCreateComponent', () => {
 
     });
 
+    it('should not create event with empty event parameters', () => {
+        comp.eventParams.name = '';
+        comp.eventParams.description = '';
+        comp.eventParams.date = '';
+
+        comp.createEvent();
+        expect(comp.submitted).toEqual(false);
+    });
+
     it('should not create event with malformed date', () => {
-        let date = '20000-01-01';
-        comp.formatDate(date);
+        comp.eventParams = stubEventParams;
+        comp.eventParams.date = 'Very much not a date';
 
         comp.createEvent();
         expect(comp.submitted).toEqual(false);
