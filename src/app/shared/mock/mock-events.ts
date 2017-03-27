@@ -17,56 +17,80 @@ export const EVENTS: Event[] = [
     {
         id: 1,
         name: 'Event 1',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'Tomorrow',
         services: SERVICES
     },
     {
         id: 2,
         name: 'Event 2',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'Tomorrow',
         services: SERVICES
     },
     {
         id: 3,
         name: 'Event 3',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'Tomorrow',
         services: SERVICES
     },
     {
         id: 4,
-        name: 'Event 4', 
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        name: 'Event 4',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'At a later date',
         services: SERVICES
     },
     {
         id: 5,
-        name: 'Event 5', 
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        name: 'Event 5',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'At a later date',
         services: SERVICES
     },
     {
         id: 6,
-        name: 'Event 6', 
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        name: 'Event 6',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'At a later date',
         services: SERVICES
     },
     {
         id: 7,
-        name: 'Event 7', 
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        name: 'Event 7',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'At a later date',
         services: SERVICES
     },
     {
         id: 8,
-        name: 'Event 8', 
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vulputate eget dui vitae eleifend. Vestibulum ac fringilla nunc. Nunc mattis elementum quam non vestibulum.',
+        name: 'Event 8',
+        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Maecenas vulputate eget dui vitae eleifend.
+            Vestibulum ac fringilla nunc.
+            Nunc mattis elementum quam non vestibulum.`,
         date: 'At a later date',
         services: SERVICES
     }
