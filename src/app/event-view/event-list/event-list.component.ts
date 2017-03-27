@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Event } from '../../shared/event.model';
+import { Event } from '../../shared/models/event.model';
 
 @Component({
     moduleId: module.id,
     selector: 'event-list',
     templateUrl: 'event-list.component.html'
 })
-export class EventListComponent{
+export class EventListComponent {
     @Input() events: Event[] = [];
     @Output() selected = new EventEmitter<Event>();
 
