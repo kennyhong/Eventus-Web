@@ -45,8 +45,7 @@ export class EventCreateComponent {
                     this.createdEvent = event;
                     this.submitted = true;
                 },
-                error => console.log(error)
-            );
+                error => console.log(error));
     }
 
     private validateInput(): boolean {
