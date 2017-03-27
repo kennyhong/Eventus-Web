@@ -1,8 +1,9 @@
 ﻿import { Component } from '@angular/core';
 import { Event, EventParams } from '../shared/models/event.model';
 import { EventService } from '../shared/services/event.service';
+import * as moment from 'moment';
 
-interface EventCreateForm {
+export interface EventCreateForm {
     name: string;
     description: string;
     date: string;
@@ -17,7 +18,7 @@ interface EventCreateForm {
 export class EventCreateComponent {
     submitted: boolean;
     formData: EventCreateForm;
-    eventParams: EventParams;
+    private eventParams: EventParams;
     createdEvent: Event;
 
     constructor(private eventService: EventService) {
@@ -34,7 +35,7 @@ export class EventCreateComponent {
 
     createEvent() {
         // TODO: give more user feedback that the event wasn't created
-        if (!this.validInput()) {
+        if (!this.validateInput()) {
             return;
         }
         this.parseForm();
@@ -48,7 +49,7 @@ export class EventCreateComponent {
             );
     }
 
-    private validInput(): boolean {
+    private validateInput(): boolean {
         if (this.formData === undefined) {
             return false;
         } else {
@@ -60,11 +61,18 @@ export class EventCreateComponent {
             }
 
             let datePattern = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
-            let timePattern = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
             if (!datePattern.test(this.formData.date)) {
                 console.error('Date does not match pattern');
                 return false;
-            } else if (!timePattern.test(this.formData.time)) {
+            }
+
+            if (!moment(this.formData.date).isValid()) {
+                console.error('date is not valid');
+                return false;
+            }
+
+            let timePattern = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+            if (!timePattern.test(this.formData.time)) {
                 console.error('Time does not match pattern');
                 return false;
             }
