@@ -6,7 +6,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
-import { Event } from '../models/event.model';
+import { Event, EventParams } from '../models/event.model';
 
 @Injectable()
 export class EventService {
@@ -26,7 +26,7 @@ export class EventService {
             .catch(this.handleError);
     }
 
-    addEvent(event: Object): Observable<Event> {
+    addEvent(event: EventParams): Observable<Event> {
         let headers = new Headers({ 'Content-type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
 
