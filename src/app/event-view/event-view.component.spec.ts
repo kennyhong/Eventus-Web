@@ -1,4 +1,3 @@
-import { Event } from '../shared/models/event.model';
 import { EventService } from '../shared/services/event.service';
 import { EventViewComponent } from './event-view.component';
 import { EventListComponent } from './event-list/event-list.component';
@@ -6,30 +5,28 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
 import { HttpModule } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of'
+import 'rxjs/add/observable/of';
 
 import { } from '@types/jasmine';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
 
 let stubEvent = {
     id: 1,
-    name: "Test Event",
-    description: "Test Description",
-    date: "1000-01-01 00:00:00",
+    name: 'Test Event',
+    description: 'Test Description',
+    date: '1000-01-01 00:00:00',
     services: [{
         id: 1,
-        name: "Test Service",
+        name: 'Test Service',
         cost: 100,
-        serviceTags:[{
+        serviceTags: [{
             id: 1,
-            name: "Test Service Tag"
+            name: 'Test Service Tag'
         }]
     }]
 };
 
-class StubEventService{
+class StubEventService {
     stubEvents = [stubEvent, stubEvent];
     getEvents() {
         return Observable.of(this.stubEvents);
@@ -39,7 +36,6 @@ class StubEventService{
 describe('EventViewComponent', () => {
     let comp: EventViewComponent;
     let fixture: ComponentFixture<EventViewComponent>;
-    let debugElement: DebugElement;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
