@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Http, Response, Headers, RequestOptions} from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/observable/throw';
 
 import { Event } from '../models/event.model';
 
+
 @Injectable()
 export class EventService {
+    headers = new Headers({ 'Content-Type': 'application/json' });
+    options = new RequestOptions({ headers: this.headers });
+
     private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
-    
+
     constructor(private http: Http) {}
 
     getEvents(): Observable<Event[]> {
@@ -18,10 +23,18 @@ export class EventService {
             .map(this.extractData)
             .catch(this.handleError);
     }
+
+    deleteEvent(id: string): Observable<Event> {
+        return this.http.delete(this.eventsUrl + '/' + id, this.options)
+            .map(this.extractData)
+            .catch(this.handleError);
+    }
+
     private extractData(res: Response) {
         let body = res.json();
         return body.data || {};
     }
+
     private handleError(error: Response | any) {
         let errMsg: string;
         if (error instanceof Response) {
