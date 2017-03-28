@@ -18,7 +18,7 @@ export interface EventCreateForm {
 export class EventCreateComponent {
     submitted: boolean;
     formData: EventCreateForm;
-    private eventParams: EventParams;
+    eventParams: EventParams;
     createdEvent: Event;
 
     constructor(private eventService: EventService) {
