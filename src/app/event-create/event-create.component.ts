@@ -48,6 +48,18 @@ export class EventCreateComponent {
                 error => console.log(error));
     }
 
+    resetEvent() {
+        this.formData = {
+            name: '',
+            description: '',
+            date: '',
+            time: ''
+        };
+        this.eventParams = {name: '', description: '', date: ''};
+        this.createdEvent = new Event(-1, '', '', '', []);
+        this.submitted = false;
+    }
+
     private validateInput(): boolean {
         if (this.formData === undefined) {
             return false;
