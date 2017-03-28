@@ -47,6 +47,4 @@ export class EventService {
         console.error(errMsg);
         return Observable.throw(errMsg);
     }
-
-
 }

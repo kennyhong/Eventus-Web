@@ -11,14 +11,14 @@ import { EventService } from '../../shared/services/event.service';
 export class EventDetailComponent {
     @Input() event: Event;
     @Output() reloadEvents = new EventEmitter();
-    errorMessage: string;
+    errorMessage: {};
 
     constructor(private eventService: EventService) { }
 
     deleteEvent(id: number) {
         this.eventService.deleteEvent(String(id))
             .subscribe(
-            success => { this.reloadEvents.emit(); },
-            error => this.errorMessage = <any>error);
+                success => { this.reloadEvents.emit(); },
+                error => this.errorMessage = <any>error);
     }
 }

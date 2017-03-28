@@ -44,18 +44,48 @@ let stubEvent2 = {
 let stubEvents = [stubEvent, stubEvent2]
 
 class StubEventService {
-    
 
     //Removes event with the given ID
-    deleteEvent(id: string): Observable<Event[]> {
-        stubEvents.splice(Number(id), 1);
-        return Observable.of(stubEvents);
+    deleteEvent(id: number): Observable<{}> {
+        var success = false;
+        var index = 0;
+        var message = {};
+
+        for (let i in stubEvents) {
+            if (stubEvents[i].id == id) {
+                success = true;
+                index = Number(i);
+            }
+        }
+        console.info(success);
+        if (success) {
+            stubEvents.splice(index, 1);
+            message = {
+                "meta": {
+                    "success": true
+                },
+                "data": null,
+                "error": null
+            }
+        }
+        else {
+            message = {
+                "data": null,
+                "error": {
+                    "title": "ModelNotFoundException",
+                    "detail": "No query results for model [App\\Event] " + id
+                }
+            }
+        }
+        
+        return Observable.of(message);
     }
 }
 
 describe('EventDetailComponent', () => {
     let comp: EventDetailComponent;
     let fixture: ComponentFixture<EventDetailComponent>;
+    let message: {};
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -74,9 +104,17 @@ describe('EventDetailComponent', () => {
 
     it('can delete an event', async(() => {
         expect(stubEvents.length).toEqual(2);
-
-        fixture.detectChanges();
         comp.deleteEvent(1);
+   
+        fixture.whenStable().then(() => {
+            expect(comp.errorMessage).toBeUndefined();
+            expect(stubEvents.length).toEqual(1);
+        });
+    }));
+
+    it('will not crash when deleting a non-existent event', async(() => {
+        expect(stubEvents.length).toEqual(1);
+        comp.deleteEvent(200);
 
         fixture.whenStable().then(() => {
             expect(stubEvents.length).toEqual(1);
