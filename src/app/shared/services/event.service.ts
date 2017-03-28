@@ -15,7 +15,7 @@ export class EventService {
     options = new RequestOptions({ headers: this.headers });
 
     private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
-    
+
     constructor(private http: Http) {}
 
     getEvents(): Observable<Event[]> {
@@ -25,7 +25,7 @@ export class EventService {
     }
 
     deleteEvent(id: string): Observable<Event> {
-        return this.http.delete(this.eventsUrl + "/" + id, this.options)
+        return this.http.delete(this.eventsUrl + '/' + id, this.options)
             .map(this.extractData)
             .catch(this.handleError);
     }

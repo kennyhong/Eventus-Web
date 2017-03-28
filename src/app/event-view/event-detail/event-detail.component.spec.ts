@@ -11,32 +11,32 @@ import { EventDetailComponent } from './event-detail.component';
 
 let stubEvent = {
     id: 1,
-    name: "Test Event",
-    description: "Test Description",
-    date: "1000-01-01 00:00:00",
+    name: 'Test Event',
+    description: 'Test Description',
+    date: '1000-01-01 00:00:00',
     services: [{
         id: 1,
-        name: "Test Service",
+        name: 'Test Service',
         cost: 100,
         serviceTags: [{
             id: 1,
-            name: "Test Service Tag"
+            name: 'Test Service Tag'
         }]
     }]
 };
 
 let stubEvent2 = {
     id: 2,
-    name: "Another Test Event",
-    description: "Another Test Description",
-    date: "2000-02-02 00:00:00",
+    name: 'Another Test Event',
+    description: 'Another Test Description',
+    date: '2000-02-02 00:00:00',
     services: [{
         id: 1,
-        name: "Another Test Service",
+        name: 'Another Test Service',
         cost: 100,
         serviceTags: [{
             id: 1,
-            name: "Another Test Service Tag"
+            name: 'Another Test Service Tag'
         }]
     }]
 };
@@ -45,11 +45,11 @@ let stubEvents: Event[];
 
 class StubEventService {
 
-    //Removes event with the given ID
+    // Removes event with the given ID
     deleteEvent(id: number): Observable<{}> {
-        var success = false;
-        var index = 0;
-        var message = {};
+        let success = false;
+        let index = 0;
+        let message = {};
 
         for (let i in stubEvents) {
             if (stubEvents[i].id === Number(id)) {
@@ -57,27 +57,26 @@ class StubEventService {
                 index = Number(i);
             }
         }
-        
+
         if (success) {
             stubEvents.splice(index, 1);
             message = {
-                "meta": {
-                    "success": true
+                meta: {
+                    success: true
                 },
-                "data": null,
-                "error": null
-            }
-        }
-        else {
+                data: null,
+                error: null
+            };
+        } else {
             message = {
-                "data": null,
-                "error": {
-                    "title": "ModelNotFoundException",
-                    "detail": "No query results for model [App\\Event] " + id
+                data: null,
+                error: {
+                    title: 'ModelNotFoundException',
+                    detail: 'No query results for model [App\\Event] ' + id
                 }
-            }
+            };
         }
-        
+
         return Observable.of(message);
     }
 }
@@ -85,7 +84,6 @@ class StubEventService {
 describe('EventDetailComponent', () => {
     let comp: EventDetailComponent;
     let fixture: ComponentFixture<EventDetailComponent>;
-    let message: {};
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -106,7 +104,7 @@ describe('EventDetailComponent', () => {
     it('can delete an event', async(() => {
         expect(stubEvents.length).toEqual(2);
         comp.deleteEvent(1);
-   
+
         fixture.whenStable().then(() => {
             expect(comp.errorMessage).toBeUndefined();
             expect(stubEvents.length).toEqual(1);
