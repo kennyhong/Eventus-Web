@@ -45,7 +45,7 @@ export class EventCreateComponent {
                     this.createdEvent = event;
                     this.submitted = true;
                 },
-                error => console.log(error));
+                error => console.error(error));
     }
 
     resetEvent() {
