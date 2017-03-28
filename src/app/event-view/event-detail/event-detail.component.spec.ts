@@ -52,12 +52,12 @@ class StubEventService {
         var message = {};
 
         for (let i in stubEvents) {
-            if (stubEvents[i].id == id) {
+            if (stubEvents[i].id === Number(id)) {
                 success = true;
                 index = Number(i);
             }
         }
-        console.info(success);
+        
         if (success) {
             stubEvents.splice(index, 1);
             message = {
