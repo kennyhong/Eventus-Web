@@ -5,16 +5,23 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
+// import { ServiceConfig } from '../../app-config';
 import { Service, ServiceTag, ServiceParams, ServiceTagParams } from '../models/service.model';
 
 @Injectable()
 export class ServiceService {
     private servicesUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services';
     private serviceTagsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
-    private headers = new Headers({'Content-Type': 'application/json'});
-    private options = new RequestOptions({headers: this.headers});
 
-    constructor(private http: Http) {}
+    // servicesUrl: string;
+    // serviceTagsUrl: string;
+    headers = new Headers({'Content-Type': 'application/json'});
+    options = new RequestOptions({headers: this.headers});
+
+    constructor(private http: Http) {
+        // this.servicesUrl = apiEndpoint + '/services';
+        // this.serviceTagsUrl = apiEndpoint + '/service_tags';
+    }
 
     // Services
     createService(params: ServiceParams): Observable<Service> {
@@ -41,7 +48,7 @@ export class ServiceService {
             .catch(this.handleError);
     }
 
-    deleteService(serviceId: number): Observable<object> {
+    deleteService(serviceId: number): Observable<Object> {
         return this.http.delete(this.servicesUrl + '/' + serviceId)
             .map(this.extractData)
             .catch(this.handleError);
@@ -80,7 +87,7 @@ export class ServiceService {
             .catch(this.handleError);
     }
 
-    deleteServiceTag(serviceTagId: number): Observable<object> {
+    deleteServiceTag(serviceTagId: number): Observable<Object> {
         return this.http.delete(this.serviceTagsUrl + '/' + serviceTagId)
             .map(this.extractData)
             .catch(this.handleError);
