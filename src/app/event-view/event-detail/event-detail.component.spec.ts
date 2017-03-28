@@ -41,7 +41,7 @@ let stubEvent2 = {
     }]
 };
 
-let stubEvents: Event[]
+let stubEvents: Event[];
 
 class StubEventService {
 
