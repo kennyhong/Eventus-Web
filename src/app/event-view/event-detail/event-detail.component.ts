@@ -10,10 +10,10 @@ import { EventService } from '../../shared/services/event.service';
 })
 export class EventDetailComponent {
     @Input() event: Event;
-    @Input() events: Event[] = [];
     @Output() reloadEvents = new EventEmitter();
     @Output() onSelected = new EventEmitter();
     errorMessage: {};
+    emptyEvent: Event;
 
     constructor(private eventService: EventService) { }
 
@@ -22,7 +22,7 @@ export class EventDetailComponent {
             .subscribe(
                 success => {
                     this.reloadEvents.emit();
-                    this.onSelected.emit(Event[0]);
+                    this.onSelected.emit(this.emptyEvent);
                 },
                 error => this.errorMessage = <any>error);
     }
