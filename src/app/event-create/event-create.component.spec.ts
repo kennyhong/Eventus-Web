@@ -65,7 +65,6 @@ describe('EventCreateComponent', () => {
 
         comp.createEvent();
         expect(comp.submitted).toEqual(false);
-
     });
 
     it('should not create event with empty event parameters', () => {
