@@ -10,7 +10,9 @@ import { EventService } from '../../shared/services/event.service';
 })
 export class EventDetailComponent {
     @Input() event: Event;
+    @Input() events: Event[] = [];
     @Output() reloadEvents = new EventEmitter();
+    @Output() onSelected = new EventEmitter();
     errorMessage: {};
 
     constructor(private eventService: EventService) { }
@@ -18,7 +20,10 @@ export class EventDetailComponent {
     deleteEvent(id: number) {
         this.eventService.deleteEvent(String(id))
             .subscribe(
-                success => { this.reloadEvents.emit(); },
+                success => {
+                    this.reloadEvents.emit();
+                    this.onSelected.emit(Event[0]);
+                },
                 error => this.errorMessage = <any>error);
     }
 }
