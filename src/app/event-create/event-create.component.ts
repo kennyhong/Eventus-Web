@@ -54,25 +54,21 @@ export class EventCreateComponent {
         } else {
             for (let key in this.formData) {
                 if (this.formData[key] === '') {
-                    console.error(key + ' in formData is empty string');
                     return false;
                 }
             }
 
             let datePattern = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
             if (!datePattern.test(this.formData.date)) {
-                console.error('Date does not match pattern');
                 return false;
             }
 
             if (!moment(this.formData.date).isValid()) {
-                console.error('date is not valid');
                 return false;
             }
 
             let timePattern = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
             if (!timePattern.test(this.formData.time)) {
-                console.error('Time does not match pattern');
                 return false;
             }
         }
