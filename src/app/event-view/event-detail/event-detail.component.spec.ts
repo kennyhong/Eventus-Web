@@ -41,7 +41,7 @@ let stubEvent2 = {
     }]
 };
 
-let stubEvents = [stubEvent, stubEvent2]
+let stubEvents: Event[]
 
 class StubEventService {
 
@@ -96,6 +96,7 @@ describe('EventDetailComponent', () => {
     }));
 
     beforeEach(() => {
+        stubEvents = [stubEvent, stubEvent2];
         fixture = TestBed.createComponent(EventDetailComponent);
         comp = fixture.componentInstance;
     });
@@ -113,11 +114,11 @@ describe('EventDetailComponent', () => {
     }));
 
     it('will not crash when deleting a non-existent event', async(() => {
-        expect(stubEvents.length).toEqual(1);
+        expect(stubEvents.length).toEqual(2);
         comp.deleteEvent(200);
 
         fixture.whenStable().then(() => {
-            expect(stubEvents.length).toEqual(1);
+            expect(stubEvents.length).toEqual(2);
         });
     }));
 });
