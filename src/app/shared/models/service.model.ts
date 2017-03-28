@@ -4,7 +4,7 @@ creating a new event as prescribed by the API
  */
 export interface ServiceParams {
     name: string;
-    cost: string;
+    cost: number;
 }
 
 export interface ServiceTagParams {
@@ -17,9 +17,10 @@ export class Service {
     cost: number;
     serviceTags: ServiceTag[];
 
-    constructor(id: number, name: string, cost: string, serviceTags: ServiceTag[]) {
+    constructor(id: number, name: string, cost: number, serviceTags: ServiceTag[]) {
         this.id = id;
         this.name = name;
+        this.cost = cost;
         this.serviceTags = serviceTags;
     }
 }
