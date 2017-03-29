@@ -5,6 +5,6 @@ import { EventService } from './shared/services/event.service';
   moduleId: module.id,
   selector: 'eventus-app',
   templateUrl: 'app.component.html',
-  providers: [ EventService ] 
+  providers: [ EventService ]
 })
 export class AppComponent { name = 'Angular'; }

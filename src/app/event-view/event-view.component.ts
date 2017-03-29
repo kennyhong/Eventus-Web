@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Event } from '../shared/event.model';
+import { Event } from '../shared/models/event.model';
 import { EventService } from '../shared/services/event.service';
-import { EventListComponent } from './event-list/event-list.component';
-import { EventDetailComponent } from './event-detail/event-detail.component';
 
 @Component({
     moduleId: module.id,
@@ -18,6 +16,14 @@ export class EventViewComponent implements OnInit {
     constructor(private eventService: EventService) {}
 
     ngOnInit() {
+        this.eventService.getEvents()
+            .subscribe(
+                events => this.events = events,
+                error => this.errorMessage = <any>error);
+    }
+
+    // Need separate function for event emitter in event-detail
+    reloadEvents() {
         this.eventService.getEvents()
             .subscribe(
                 events => this.events = events,
