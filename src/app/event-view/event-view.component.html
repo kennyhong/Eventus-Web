@@ -13,7 +13,9 @@
     </div>
     <div class="col-xs-8 pre-scrollable">
         <event-detail
-            [event]="selectedEvent">
+            [event]="selectedEvent"
+            (reloadEvents)="reloadEvents($event)"
+            (onSelected)="onSelected($event)">
         </event-detail>
     </div>
 </div>
