@@ -11,10 +11,9 @@ import { Event, EventParams } from '../models/event.model';
 
 @Injectable()
 export class EventService {
-    headers = new Headers({ 'Content-Type': 'application/json' });
-    options = new RequestOptions({ headers: this.headers });
-
-    private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
+    private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
+    private headers = new Headers({ 'Content-Type': 'application/json' });
+    private options = new RequestOptions({ headers: this.headers });
 
     constructor(private http: Http) {}
 
@@ -30,13 +29,10 @@ export class EventService {
             .catch(this.handleError);
     }
 
-    addEvent(event: EventParams): Observable<Event> {
-        let headers = new Headers({ 'Content-type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-
+    createEvent(event: EventParams): Observable<Event> {
         let json = JSON.stringify(event);
 
-        return this.http.post(this.eventsUrl, json, options)
+        return this.http.post(this.eventsUrl, json, this.options)
             .map(this.extractData)
             .catch(this.handleError);
     }
