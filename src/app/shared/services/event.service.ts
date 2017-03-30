@@ -31,18 +31,23 @@ export class EventService {
     }
 
     addEvent(event: EventParams): Observable<Event> {
-        let headers = new Headers({ 'Content-type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-
         let json = JSON.stringify(event);
 
-        return this.http.post(this.eventsUrl, json, options)
+        return this.http.post(this.eventsUrl, json, this.options)
             .map(this.extractData)
             .catch(this.handleError);
     }
 
     deleteEvent(id: string): Observable<Event> {
         return this.http.delete(this.eventsUrl + '/' + id, this.options)
+            .map(this.extractData)
+            .catch(this.handleError);
+    }
+
+    editEvent(event: EventParams, id: number): Observable<Event> {
+        let json = JSON.stringify(event);
+
+        return this.http.put(this.eventsUrl + '/' + id, json, this.options)
             .map(this.extractData)
             .catch(this.handleError);
     }

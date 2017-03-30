@@ -16,7 +16,7 @@
             </div>
         </div>
         <div align="right">
-            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#editForm">
+            <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editForm">
                 Edit
             </button>
             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteMsg">
@@ -39,13 +39,45 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <h1>Edit placeholder</h1>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="deleteEvent(event.id)" data-dismiss="modal">Save</button>
-            </div>
+            <form (ngSubmit)="editEvent()" #eventForm="ngForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Event Name</label>
+                        <input type="text" class="form-control" id="name"
+                               required
+                               name="name" [(ngModel)]="formData.name">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description"
+                                  required
+                                  name="description" [(ngModel)]="formData.description"
+                                  rows="4" cols="50"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Start Date</label>
+                        <input type="text" class="form-control" id="date"
+                               required
+                               pattern="^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$"
+                               name="date" [(ngModel)]="formData.date">
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Start Time</label>
+                        <input type="text" class="form-control" id="time"
+                               required
+                               pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"
+                               name="time" [(ngModel)]="formData.time"
+                               placeholder="HH:MM:SS">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-primary"
+                           value="Save Event"
+                           [disabled]="!eventForm.form.valid"
+                           data-dismiss="modal">
+                </div>
+            </form>
         </div>
     </div>
 </div>
