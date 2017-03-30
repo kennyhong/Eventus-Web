@@ -5,98 +5,99 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
-// import { ServiceConfig } from '../../app-config';
-import { Service, ServiceTag, ServiceParams, ServiceTagParams } from '../models/service.model';
+import { Service, ServiceTag} from '../models/service.model';
 
 @Injectable()
 export class ServiceService {
-    private servicesUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services';
-    private serviceTagsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
+    private baseUrl = 'http://eventus.us-west-2.elasticbeanstalk.com';
+    private servicesUrl = this.baseUrl + '/api/services';
+    private serviceTagsUrl = this.baseUrl + '/api/service_tags';
 
-    // servicesUrl: string;
-    // serviceTagsUrl: string;
     headers = new Headers({'Content-Type': 'application/json'});
     options = new RequestOptions({headers: this.headers});
 
-    constructor(private http: Http) {
-        // this.servicesUrl = apiEndpoint + '/services';
-        // this.serviceTagsUrl = apiEndpoint + '/service_tags';
-    }
+    constructor(private http: Http) {}
 
+    // --------
     // Services
-    createService(params: ServiceParams): Observable<Service> {
-        return this.http.post(this.servicesUrl, params, this.options)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
+    // --------
     getServices(): Observable<Service[]> {
         return this.http.get(this.servicesUrl)
-            .map(this.extractData)
+            .map(this.extractServices)
             .catch(this.handleError);
     }
 
     getService(serviceId: number): Observable<Service> {
         return this.http.get(this.servicesUrl + '/' + serviceId)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
-    updateService(serviceId: number, params: ServiceParams): Observable<Service> {
-        return this.http.put(this.servicesUrl + '/' + serviceId, params, this.options)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
-    deleteService(serviceId: number): Observable<Object> {
-        return this.http.delete(this.servicesUrl + '/' + serviceId)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
-    // Add a service tag to a service
-    addServiceTag(serviceId: number, serviceTagId: number) {
-        return this.http.post(this.servicesUrl + '/' + serviceId + 'service_tags/' + serviceTagId, '')
-            .map(this.extractData)
+            .map(this.extractService)
             .catch(this.handleError);
     }
 
 
+    // ------------
     // Service Tags
-    createServiceTag(params: ServiceTagParams): Observable<ServiceTag> {
-        return this.http.post(this.serviceTagsUrl, params, this.options)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
+    // ------------
     getServiceTag(serviceTagId: number): Observable<ServiceTag> {
         return this.http.get(this.serviceTagsUrl + '/' + serviceTagId)
-            .map(this.extractData)
+            .map(this.extractServiceTag)
             .catch(this.handleError);
     }
 
-    getServiceTags() {
+    getServiceTags(): Observable<ServiceTag[]> {
         return this.http.get(this.serviceTagsUrl)
-            .map(this.extractData)
+            .map(this.extractServiceTags)
             .catch(this.handleError);
     }
 
-    updateServiceTag(serviceTagId: number, params: ServiceTagParams) {
-        return this.http.put(this.serviceTagsUrl + '/' + serviceTagId, params, this.options)
-            .map(this.extractData)
-            .catch(this.handleError);
+    private extractService(res: Response): Service {
+        let service: Service;
+        let data = res.json().data;
+
+        if (data === null) {
+            service = new Service(-1, '', 0, []);
+        } else {
+            service = new Service(data.id, data.name, data.cost, data.service_tags);
+        }
+
+        return service;
     }
 
-    deleteServiceTag(serviceTagId: number): Observable<Object> {
-        return this.http.delete(this.serviceTagsUrl + '/' + serviceTagId)
-            .map(this.extractData)
-            .catch(this.handleError);
+    private extractServices(res: Response): Service[] {
+        let services: Service[] = [];
+        let data = res.json().data;
+
+        if (data !== null) {
+            for (let item of data) {
+                services.push(new Service(item.id, item.name, item.cost, item.service_tags));
+            }
+        }
+
+        return services;
     }
 
+    private extractServiceTag(res: Response): ServiceTag {
+        let serviceTag: ServiceTag;
+        let data = res.json().data;
 
-    private extractData(res: Response) {
-        let body = res.json();
-        return body.data || {};
+        if (data === null) {
+            serviceTag = new ServiceTag(-1, '');
+        } else {
+            serviceTag = new ServiceTag(data.id, data.name);
+        }
+        return serviceTag;
+    }
+
+    private extractServiceTags(res: Response): ServiceTag[] {
+        let serviceTags: ServiceTag[] = [];
+        let data = res.json().data;
+
+        if (data !== null) {
+            for (let item of data) {
+                serviceTags.push(new ServiceTag(item.id, item.name));
+            }
+        }
+
+        return serviceTags;
     }
 
     private handleError(error: Response | any) {

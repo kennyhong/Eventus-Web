@@ -1,16 +1,3 @@
-/*
-This interface defines the properties that ServiceService expects when
-creating a new event as prescribed by the API
- */
-export interface ServiceParams {
-    name: string;
-    cost: number;
-}
-
-export interface ServiceTagParams {
-    name: string;
-}
-
 export class Service {
     id: number;
     name: string;
