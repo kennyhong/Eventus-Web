@@ -4,13 +4,13 @@ import { Service, ServiceTag } from '../models/service.model';
 const SERVICE_TAGS: ServiceTag[] = [
     {id: 1, name: 'Service Tag 1'},
     {id: 2, name: 'Service Tag 2'},
-    {id: 3, name: 'Service Tag 3'},
+    {id: 3, name: 'Service Tag 3'}
 ];
 
 const SERVICES: Service[] = [
     {id: 1, name: 'Service 1', cost: 100, serviceTags: SERVICE_TAGS},
     {id: 2, name: 'Service 2', cost: 100, serviceTags: SERVICE_TAGS},
-    {id: 3, name: 'Service 3', cost: 100, serviceTags: SERVICE_TAGS},
+    {id: 3, name: 'Service 3', cost: 100, serviceTags: SERVICE_TAGS}
 ];
 
 export const EVENTS: Event[] = [
@@ -21,7 +21,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'Tomorrow',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -31,7 +31,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'Tomorrow',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -41,7 +41,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'Tomorrow',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -51,7 +51,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'At a later date',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -61,7 +61,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'At a later date',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -71,7 +71,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'At a later date',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -81,7 +81,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'At a later date',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     },
     {
@@ -91,7 +91,7 @@ export const EVENTS: Event[] = [
             Maecenas vulputate eget dui vitae eleifend.
             Vestibulum ac fringilla nunc.
             Nunc mattis elementum quam non vestibulum.`,
-        date: 'At a later date',
+        date: '2000-01-01 00:00:00',
         services: SERVICES
     }
 ];
