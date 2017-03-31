@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
 import { Event, EventParams } from '../models/event.model';
-
+import { Service, ServiceTag } from '../models/service.model';
 
 @Injectable()
 export class EventService {
@@ -17,35 +17,94 @@ export class EventService {
 
     constructor(private http: Http) {}
 
+    createEvent(params: EventParams): Observable<Event> {
+        let body = JSON.stringify(params);
+
+        return this.http.post(this.eventsUrl, body, this.options)
+            .map(this.extractEvent)
+            .catch(this.handleError);
+    }
+
+    getEvent(id: number): Observable<Event> {
+        return this.http.get(this.eventsUrl + '/' + id)
+            .map(this.extractEvent)
+            .catch(this.handleError);
+    }
+
     getEvents(): Observable<Event[]> {
         return this.http.get(this.eventsUrl)
-            .map(this.extractData)
+            .map(this.extractEvents)
             .catch(this.handleError);
     }
 
-    getEvent(id: Number): Observable<Event> {
-        return this.http.get(this.eventsUrl + '/' + id)
-            .map(this.extractData)
+    updateEvent(eventId: number, params: EventParams): Observable<Event> {
+        let body = JSON.stringify(params);
+
+        return this.http.put(this.eventsUrl + '/' + eventId, body, this.options)
+            .map(this.extractEvent)
             .catch(this.handleError);
     }
 
-    createEvent(event: EventParams): Observable<Event> {
-        let json = JSON.stringify(event);
-
-        return this.http.post(this.eventsUrl, json, this.options)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
-    deleteEvent(id: string): Observable<Event> {
+    deleteEvent(id: number): Observable<any> {
         return this.http.delete(this.eventsUrl + '/' + id, this.options)
-            .map(this.extractData)
+            .map(this.extractSuccess)
             .catch(this.handleError);
+    }
+
+    private extractEvent(res: Response): Event {
+        let event: Event;
+        let data = res.json().data;
+
+        if (data === null) {
+            event = new Event(-1, '', '', '', []);
+        } else {
+            let services: Service[] = [];
+
+            for (let service of data.services) {
+                let serviceTags: ServiceTag[] = [];
+
+                for (let serviceTag of service.service_tags) {
+                    serviceTags.push(new ServiceTag(serviceTag.id, serviceTag.name));
+                }
+                services.push(new Service(service.id, service.name, service.cost, serviceTags));
+            }
+            event = new Event(data.id, data.name, data.description, data.date, services);
+        }
+
+        return event;
+    }
+
+    private extractEvents(res: Response): Event[] {
+        let events: Event[] = [];
+        let data = res.json().data;
+
+        if (data !== null) {
+            for (let event of data) {
+                let services: Service[] = [];
+
+                for (let service of event.services) {
+                    let serviceTags: ServiceTag[] = [];
+
+                    for (let serviceTag of service.service_tags) {
+                        serviceTags.push(new ServiceTag(serviceTag.id, serviceTag.name));
+                    }
+                    services.push(new Service(service.id, service.name, service.cost, serviceTags));
+                }
+                events.push(new Event(event.id, event.name, event.description, event.date, services));
+            }
+        }
+
+        return events;
     }
 
     private extractData(res: Response) {
         let body = res.json();
         return body.data || {};
+    }
+
+    private extractSuccess(res: Response): boolean {
+        let meta = res.json().meta;
+        return meta.success || {};
     }
 
     private handleError(error: Response | any) {
@@ -58,6 +117,7 @@ export class EventService {
             errMsg = error.message ? error.message : error.toString();
         }
         console.error(errMsg);
+
         return Observable.throw(errMsg);
     }
 }

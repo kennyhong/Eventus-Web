@@ -15,7 +15,7 @@ import {
 
 import { EventService } from './event.service';
 import { Event, EventParams } from '../models/event.model';
-import { Service } from '../models/service.model';
+import { Service, ServiceTag } from '../models/service.model';
 
 interface ServiceTagResponse {
     id: number;
@@ -69,7 +69,7 @@ const stubEvent: EventResponse = {
     services: [stubService]
 };
 
-describe('ServiceService', () => {
+describe('EventService', () => {
     let mockBackend: MockBackend;
     let eventService: EventService;
 
@@ -108,15 +108,14 @@ describe('ServiceService', () => {
         });
     }
 
-    it('should create an instance of ServiceService', () => {
+    it('can create an instance of EventService', () => {
         expect(eventService).toBeDefined();
     });
-
 
     // -----------
     // Event Tests
     // -----------
-    it('should create a new Event object using createEvent()', () => {
+    it('creates a new Event object using createEvent()', () => {
         let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
 
         // Setup the backend to create an object based on contents of request body
@@ -140,6 +139,7 @@ describe('ServiceService', () => {
                 },
                 status: 200
             };
+
             if (connection.request.url === url) {
                 const responseOptions = new ResponseOptions(options);
                 const response = new Response(responseOptions);
@@ -168,318 +168,316 @@ describe('ServiceService', () => {
         expect(receivedEvent.name).toBe(params.name);
         expect(receivedEvent.description).toBe(params.description);
         expect(receivedEvent.date).toBe(params.date);
+        expect(receivedEvent.date)
+            .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
         expect(receivedEvent.services.length).toBe(0);
     });
 
-    // // --- Retrieve ---
-    // it('should receive a single Service object using getService()', () => {
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
-    //     let receivedEvent: Event;
+    it('retrieves a single Event object using getEvent()', () => {
+        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
+        let receivedEvent: Event;
+        let receivedService: Service;
+        let receivedServiceTag: ServiceTag;
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: stubEvent,
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+        setupConnections(mockBackend, requestedUrl, {
+            body: {
+                meta: null,
+                data: stubEvent,
+                error: null
+            },
+            status: 200
+        });
 
-    //     eventService.getEvent(1).subscribe(
-    //         event => receivedEvent = event,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to receive response from MockBackend');
-    //         });
+        eventService.getEvent(1).subscribe(
+            event => {
+                receivedEvent = event;
+            },
+            error => {
+                console.error(error);
+                fail('Failed to receive response from MockBackend');
+            });
 
-    //     expect(receivedEvent.id).toBe(stubEvent.id);
-    //     expect(receivedEvent.name).toBe(stubEvent.name);
-    //     expect(receivedEvent.description).toBe(stubEvent.description);
-    // });
+        expect(receivedEvent).toEqual(jasmine.any(Event));
+        expect(receivedEvent.id).toBe(stubEvent.id);
+        expect(receivedEvent.name).toBe(stubEvent.name);
+        expect(receivedEvent.description).toBe(stubEvent.description);
+        expect(receivedEvent.date).toBe(stubEvent.date);
+        expect(receivedEvent.date)
+            .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
+        expect(receivedEvent.services.length).toBe(1);
 
-    // it('should receive an Array<Service> object using getServices()', () => {
-    //     const NUM_SERVICES = 5;
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services';
-    //     let stubServices: ServiceResponse[] = [];
-    //     let receivedServices: Service[];
+        receivedService = receivedEvent.services[0];
 
-    //     // Generate a list of services to respond with
-    //     for (let i = 1; i <= NUM_SERVICES; i++) {
-    //         let item: ServiceResponse = {
-    //             id: i,
-    //             name: 'Test Service',
-    //             cost: 100,
-    //             created_at: '2000-01-01 00:00:00',
-    //             updated_at: '2000-01-01 00:00:00',
-    //             service_tags: [stubServiceTag]
-    //         };
-    //         stubServices.push(item);
-    //     }
+        expect(receivedService).toEqual(jasmine.any(Service));
+        expect(receivedService.id).toBe(stubService.id);
+        expect(receivedService.name).toBe(stubService.name);
+        expect(receivedService.cost).toBe(stubService.cost);
+        expect(receivedService.serviceTags.length).toBe(1);
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: stubServices,
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+        receivedServiceTag = receivedService.serviceTags[0];
 
-    //     serviceService.getServices().subscribe(
-    //         services => receivedServices = services,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to receive Array<Service> from MockBackend');
-    //         });
+        expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
+        expect(receivedServiceTag.id).toBe(stubServiceTag.id);
+        expect(receivedServiceTag.name).toBe(stubServiceTag.name);
+    });
 
-    //     expect(receivedServices).toEqual(jasmine.any(Array));
-    //     expect(receivedServices.length).toBe(NUM_SERVICES, 'received unexpected number of services');
+    it('retrieves an Array of valid Event objects using getEvents()', () => {
+        const NUM_EVENTS = 5;
+        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
+        let stubEvents: EventResponse[] = [];
+        let receivedEvents: Event[];
 
-    //     for (let index in receivedServices) {
-    //         // index is a string, so we need to cast to number before performing arithmetic
-    //         let i = Number(index);
+        for (let i = 1; i <= NUM_EVENTS; i++) {
+            let event: EventResponse = {
+                id: i,
+                name: 'Test Event',
+                description: 'Test Description',
+                date: '2000-01-01 00:00:00',
+                created_at: '2000-01-01 00:00:00',
+                updated_at: '2000-01-01 00:00:00',
+                services: [stubService]
+            };
+            stubEvents.push(event);
+        }
 
-    //         expect(receivedServices[i]).toEqual(jasmine.any(Service));
+        setupConnections(mockBackend, requestedUrl, {
+            body: {
+                meta: null,
+                data: stubEvents,
+                error: null
+            },
+            status: 200
+        });
 
-    //         // IDs are 1 indexed, not 0 indexed
-    //         expect(receivedServices[i].id).toBe(i + 1);
-    //         expect(receivedServices[i].name).toBe('Test Service');
-    //         expect(receivedServices[i].cost).toBe(100);
-    //     }
-    // });
+        eventService.getEvents().subscribe(
+            events => {
+                receivedEvents = events;
+            },
+            error => {
+                console.error(error);
+                fail('Failed to receive response from MockBackend');
+            });
 
-    // it('should handle requesting a Service that is not in the database using getService()', () => {
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services/999';
-    //     let receivedService: Service;
+        expect(receivedEvents).toEqual(jasmine.any(Array));
+        expect(receivedEvents.length).toBe(NUM_EVENTS);
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: null,
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+        for (let index in receivedEvents) {
+            // index is a string, so we need to cast to number before performing arithmetic
+            let i = Number(index);
 
-    //     serviceService.getService(999).subscribe(
-    //         service => receivedService = service,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to handle request service not in database');
-    //         }
-    //     );
+            let event = receivedEvents[i];
 
-    //     expect(receivedService).toEqual(jasmine.any(Service));
-    //     expect(receivedService.id).toBe(-1);
-    //     expect(receivedService.name).toBe('');
-    //     expect(receivedService.cost).toBe(0);
-    //     expect(receivedService.serviceTags.length).toBe(0);
-    // });
+            expect(event).toEqual(jasmine.any(Event));
+            expect(event.id).toBe(i + 1);
+            expect(event.name).toBe(stubEvent.name);
+            expect(event.description).toBe(stubEvent.description);
+            expect(event.date).toBe(stubEvent.date);
+            expect(event.date)
+                .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
+            expect(event.services.length).toBe(1);
 
-    // it('should handle requesting an Array<Service> on an empty database using getServices()', () => {
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services';
-    //     let receivedServices: Service[];
+            for (let service of event.services) {
+                expect(service).toEqual(jasmine.any(Service));
+                expect(service.id).toBe(stubService.id);
+                expect(service.name).toBe(stubService.name);
+                expect(service.cost).toBe(stubService.cost);
+                expect(service.serviceTags.length).toBe(1);
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: [],
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+                for (let tag of service.serviceTags) {
+                    expect(tag).toEqual(jasmine.any(ServiceTag));
+                    expect(tag.id).toBe(stubServiceTag.id);
+                    expect(tag.name).toBe(stubServiceTag.name);
+                }
+            }
+        }
+    });
 
-    //     serviceService.getServices().subscribe(
-    //         services => receivedServices = services,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to handle response for non-existent service');
-    //         }
-    //     );
+    it('handles attempting to retrieve an Event that is not in the database using getEvent()', () => {
+        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
+        let receivedEvent: Event;
 
-    //     expect(receivedServices.length).toBe(0);
-    // });
+        setupConnections(mockBackend, requestedUrl, {
+            body: {
+                meta: null,
+                data: null,
+                error: null
+            },
+            status: 200
+        });
 
-    // // --- Update ---
+        eventService.getEvent(1).subscribe(
+            event => {
+                receivedEvent = event;
+            },
+            error => {
+                console.error(error);
+                fail('Failed to receive response from MockBackend');
+            });
 
-    // // --- Delete ---
+        expect(receivedEvent).toEqual(jasmine.any(Event));
+        expect(receivedEvent.id).toBe(-1);
+        expect(receivedEvent.name).toBe('');
+        expect(receivedEvent.description).toBe('');
+        expect(receivedEvent.date).toBe('');
+        expect(receivedEvent.services.length).toBe(0);
+    });
 
+    it('handles attempting to retrieve all Event from an empty database using getEvents()', () => {
+        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
+        let receivedEvents: Event[];
 
-    // // -----
-    // // ServiceTag Tests
-    // // -----
+        setupConnections(mockBackend, requestedUrl, {
+            body: {
+                meta: null,
+                data: [],
+                error: null
+            },
+            status: 200
+        });
 
-    // // --- Create ---
-    // it('should create a new Service object using createService()', () => {
-    //     let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
+        eventService.getEvents().subscribe(
+            events => receivedEvents = events,
+            error => {
+                console.error(error);
+                fail('Failed to receive response from MockBackend');
+            });
 
-    //     // Setup the backend to create an object based on contents of request body
-    //     mockBackend.connections.subscribe((connection: MockConnection) => {
-    //         expect(connection.request.method).toBe(RequestMethod.Post);
-    //         let reqBody = JSON.parse(connection.request.getBody());
+        expect(receivedEvents).toEqual(jasmine.any(Array));
+        expect(receivedEvents.length).toBe(0);
+    });
 
-    //         let options: any = {
-    //             body: {
-    //                 meta: null,
-    //                 data: {
-    //                     id: 1,
-    //                     name: reqBody.name,
-    //                     created_at: '2000-01-01 00:00:00',
-    //                     updated_at: '2000-01-01 00:00:00',
-    //                 },
-    //                 error: null
-    //             },
-    //             status: 200
-    //         };
-    //         if (connection.request.url === url) {
-    //             const responseOptions = new ResponseOptions(options);
-    //             const response = new Response(responseOptions);
+    it('updates an event in the database using updateEvent()', () => {
+        let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
 
-    //             connection.mockRespond(response);
-    //         }
-    //     });
+        let myEvent: EventResponse = {
+            id: 1,
+            name: 'My Event',
+            description: 'My Description',
+            date: '2000-01-01 00:00:00',
+            created_at: '2000-01-01 00:00:00',
+            updated_at: '2000-01-01 00:00:00',
+            services: []
+        };
 
-    //     let receivedServiceTag: ServiceTag;
-    //     let params: ServiceTagParams = {
-    //         name: 'Test Service'
-    //     };
+        // Setup the backend to create an object based on contents of request body
+        mockBackend.connections.subscribe((connection: MockConnection) => {
+            expect(connection.request.method).toBe(RequestMethod.Put);
+            let reqBody = JSON.parse(connection.request.getBody());
 
-    //     serviceService.createServiceTag(params).subscribe(
-    //         serviceTag => receivedServiceTag = serviceTag,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to handle response for creating service');
-    //         }
-    //     );
+            myEvent.name = reqBody.name;
+            myEvent.description = reqBody.description;
+            myEvent.date = reqBody.date;
+            myEvent.updated_at = '2000-01-01 00:00:01';
 
-    //     expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
-    //     expect(receivedServiceTag.id).toBe(1);
-    //     expect(receivedServiceTag.name).toBe(params.name);
-    // });
+            let options: any = {
+                body: {
+                    meta: null,
+                    data: myEvent,
+                    error: null
+                },
+                status: 200
+            };
 
-    // it('should receive a single ServiceTag object using getServiceTag()', () => {
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags/1';
-    //     let receivedServiceTag: ServiceTag;
+            if (connection.request.url === url) {
+                const responseOptions = new ResponseOptions(options);
+                const response = new Response(responseOptions);
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: stubServiceTag,
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+                connection.mockRespond(response);
+            }
+        });
 
-    //     serviceService.getServiceTag(1).subscribe(
-    //         serviceTag => receivedServiceTag = serviceTag,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to receive response from MockBackend');
-    //         });
+        let receivedEvent: Event;
+        let params: EventParams = {
+            name: 'My Updated Event',
+            description: 'My Updated Description',
+            date: '2000-01-02 00:00:00'
+        };
 
-    //     expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
-    //     expect(receivedServiceTag.id).toBe(stubServiceTag.id);
-    //     expect(receivedServiceTag.name).toBe(stubServiceTag.name);
-    // });
+        // Preconditions
+        expect(myEvent.id).toBe(1);
+        expect(myEvent.name).toBe('My Event');
+        expect(myEvent.description).toBe('My Description');
+        expect(myEvent.date).toBe('2000-01-01 00:00:00');
 
-    // it('should receive Array<ServiceTag> using getServiceTags()', () => {
-    //     const NUM_SERVICES_TAGS = 5;
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
-    //     let stubServicesTags: ServiceTagResponse[] = [];
-    //     let receivedServicesTags: ServiceTag[];
+        // The params are different than what myEvent currently is
+        expect(myEvent.name).not.toBe(params.name);
+        expect(myEvent.description).not.toBe(params.description);
+        expect(myEvent.date).not.toBe(params.date);
 
-    //     // Generate a list of services to respond with
-    //     for (let i = 1; i <= NUM_SERVICES_TAGS; i++) {
-    //         let item: ServiceTagResponse = {
-    //             id: i,
-    //             name: 'Test Service',
-    //             created_at: '2000-01-01 00:00:00',
-    //             updated_at: '2000-01-01 00:00:00'
-    //         };
-    //         stubServicesTags.push(item);
-    //     }
+        eventService.updateEvent(1, params).subscribe(
+            event => receivedEvent = event,
+            error => {
+                console.error(error);
+                fail('Failed to receive response from MockBackend');
+            });
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: stubServicesTags,
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+        // The received event contains the changes
+        expect(receivedEvent.id).toBe(1);
+        expect(receivedEvent.name).toBe(params.name);
+        expect(receivedEvent.description).toBe(params.description);
+        expect(receivedEvent.date).toBe(params.date);
 
-    //     serviceService.getServiceTags().subscribe(
-    //         serviceTags => receivedServicesTags = serviceTags,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to receive Array<Service> from MockBackend');
-    //         });
+        // The event in the "database" actually changed to what we passed
+        expect(myEvent.id).toBe(1);
+        expect(myEvent.name).toBe(params.name);
+        expect(myEvent.description).toBe(params.description);
+        expect(myEvent.date).toBe(params.date);
+    });
 
-    //     expect(receivedServicesTags).toEqual(jasmine.any(Array));
-    //     expect(receivedServicesTags.length).toBe(NUM_SERVICES_TAGS, 'received unexpected number of services');
+    it('deletes an event from the database using deleteEvent()', () => {
+        let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
 
-    //     for (let index in receivedServicesTags) {
-    //         // index is a string, so we need to cast to number before performing arithmetic
-    //         let i = Number(index);
+        let database: EventResponse[] = [
+            {
+                id: 1,
+                name: 'Test Event',
+                description: 'Test Descriptions',
+                date: '2000-01-01 00:00:00',
+                created_at: '2000-01-01 00:00:00',
+                updated_at: '2000-01-01 00:00:00',
+                services: []
 
-    //         expect(receivedServicesTags[i]).toEqual(jasmine.any(ServiceTag));
+            }
+        ];
 
-    //         // IDs are 1 indexed, not 0 indexed
-    //         expect(receivedServicesTags[i].id).toBe(i + 1);
-    //         expect(receivedServicesTags[i].name).toBe('Test Service');
-    //     }
-    // });
+        // Setup the backend to create an object based on contents of request body
+        mockBackend.connections.subscribe((connection: MockConnection) => {
+            let success = false;
 
-    // it('should handle requesting a ServiceTag that is not in the database using getServiceTag()', () => {
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags/999';
-    //     let receivedServiceTag: ServiceTag;
+            if (connection.request.method === RequestMethod.Delete) {
+                database = [];
+                success = true;
+            } else {
+                fail('Request verb is not DELETE');
+            }
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: null,
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+            let options: any = {
+                body: {
+                    meta: {
+                        success: success
+                    },
+                    data: null,
+                    error: null
+                },
+                status: 200
+            };
 
-    //     serviceService.getServiceTag(999).subscribe(
-    //         serviceTag => receivedServiceTag = serviceTag,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to handle request ServiceTag not in database');
-    //         }
-    //     );
+            if (connection.request.url === url) {
+                const responseOptions = new ResponseOptions(options);
+                const response = new Response(responseOptions);
 
-    //     expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
-    //     expect(receivedServiceTag.id).toBe(-1);
-    //     expect(receivedServiceTag.name).toBe('');
-    // });
+                connection.mockRespond(response);
+            }
+        });
 
-    // it('should handle requesting Array<ServiceTag> on an empty database using getServiceTags()', () => {
-    //     let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
-    //     let receivedServiceTags: ServiceTag[];
+        let deleted: boolean;
 
-    //     setupConnections(mockBackend, requestedUrl, {
-    //         body: {
-    //             meta: null,
-    //             data: [],
-    //             error: null
-    //         },
-    //         status: 200
-    //     });
+        eventService.deleteEvent(1).subscribe(
+            success => deleted = success,
+            error => fail(error)
+        );
 
-    //     serviceService.getServiceTags().subscribe(
-    //         serviceTags => receivedServiceTags = serviceTags,
-    //         error => {
-    //             console.error(error);
-    //             fail('Failed to handle response for non-existent service');
-    //         }
-    //     );
-
-    //     expect(receivedServiceTags).toEqual(jasmine.any(Array));
-    //     expect(receivedServiceTags.length).toBe(0);
-    // });
-
-
+        expect(database.length).toBe(0);
+        expect(deleted).toBe(true);
+    });
 });
