@@ -16,7 +16,7 @@
             </div>
         </div>
         <div align="right">
-            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#serviceList">
+            <button type="button" class="btn btn-default btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
                 View Services
             </button>
             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteMsg">
@@ -40,7 +40,15 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h1>Service list placeholder</h1>
+                <div class="list-group">
+                    <a *ngFor="let service of services" class="list-group-item service">
+                        <h3 class="list-group-item-heading">{{service.name}}</h3>
+                        <div class="list-group-item-text">${{service.cost}}</div>
+                            <span *ngFor="let serviceTag of service.serviceTags" class="label label-primary" style="margin-right:5px;">
+                                <span class="glyphicon glyphicon-tag">&nbsp;</span>{{serviceTag.name}}
+                            </span>
+                    </a>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

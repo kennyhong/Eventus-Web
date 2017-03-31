@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Event } from '../../shared/models/event.model';
 import { EventService } from '../../shared/services/event.service';
+import { Service } from '../../shared/models/service.model';
+import { ServiceService } from '../../shared/services/service.service';
 
 @Component({
     moduleId: module.id,
@@ -14,8 +16,9 @@ export class EventDetailComponent {
     @Output() onSelected = new EventEmitter();
     errorMessage: {};
     emptyEvent: Event;
+    services: Service[] = [];
 
-    constructor(private eventService: EventService) { }
+    constructor(private eventService: EventService, private serviceService: ServiceService) { }
 
     deleteEvent(id: number) {
         this.eventService.deleteEvent(String(id))
@@ -25,5 +28,12 @@ export class EventDetailComponent {
                     this.onSelected.emit(this.emptyEvent);
                 },
                 error => this.errorMessage = <any>error);
+    }
+
+    loadServices() {
+        this.serviceService.getServices()
+            .subscribe(
+            services => this.services = services,
+            error => this.errorMessage = <any>error);
     }
 }
