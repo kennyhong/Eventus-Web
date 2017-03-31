@@ -97,11 +97,6 @@ export class EventService {
         return events;
     }
 
-    private extractData(res: Response) {
-        let body = res.json();
-        return body.data || {};
-    }
-
     private extractSuccess(res: Response): boolean {
         let meta = res.json().meta;
         return meta.success || {};
