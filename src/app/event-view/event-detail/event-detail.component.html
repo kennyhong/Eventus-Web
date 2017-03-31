@@ -16,6 +16,9 @@
             </div>
         </div>
         <div align="right">
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#serviceList">
+                View Services
+            </button>
             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteMsg">
                 Delete
             </button>
@@ -25,6 +28,25 @@
 
 <div *ngIf="event === undefined">
     <h2>Please Select an Event</h2>
+</div>
+
+<div *ngIf="event !== undefined" class="modal fade" id="serviceList" tabindex="-1" role="dialog" aria-labelledby="serviceListLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="serviceListLabel"><b>Service List</b></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h1>Service list placeholder</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div *ngIf="event !== undefined" class="modal fade" id="deleteMsg" tabindex="-1" role="dialog" aria-labelledby="deleteMsgLabel" aria-hidden="true">
