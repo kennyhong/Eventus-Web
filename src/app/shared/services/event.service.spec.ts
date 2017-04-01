@@ -97,8 +97,9 @@ describe('EventService', () => {
     }));
 
     // Helper function to setup tests with simple responeses
-    function setupConnections(backend: MockBackend, url: string, options: any) {
+    function setupConnections(backend: MockBackend, url: string, expectedMethod: RequestMethod, options: any) {
         backend.connections.subscribe((connection: MockConnection) => {
+            expect(connection.request.method).toBe(expectedMethod);
             if (connection.request.url === url) {
                 const responseOptions = new ResponseOptions(options);
                 const response = new Response(responseOptions);
@@ -179,7 +180,7 @@ describe('EventService', () => {
         let receivedService: Service;
         let receivedServiceTag: ServiceTag;
 
-        setupConnections(mockBackend, requestedUrl, {
+        setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
             body: {
                 meta: null,
                 data: stubEvent,
@@ -240,7 +241,7 @@ describe('EventService', () => {
             stubEvents.push(event);
         }
 
-        setupConnections(mockBackend, requestedUrl, {
+        setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
             body: {
                 meta: null,
                 data: stubEvents,
@@ -296,7 +297,7 @@ describe('EventService', () => {
         let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
         let receivedEvent: Event;
 
-        setupConnections(mockBackend, requestedUrl, {
+        setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
             body: {
                 meta: null,
                 data: null,
@@ -326,7 +327,7 @@ describe('EventService', () => {
         let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
         let receivedEvents: Event[];
 
-        setupConnections(mockBackend, requestedUrl, {
+        setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
             body: {
                 meta: null,
                 data: [],
@@ -442,6 +443,7 @@ describe('EventService', () => {
 
         // Setup the backend to create an object based on contents of request body
         mockBackend.connections.subscribe((connection: MockConnection) => {
+            expect(connection.request.method).toBe(RequestMethod.Delete);
             let success = false;
 
             if (connection.request.method === RequestMethod.Delete) {
