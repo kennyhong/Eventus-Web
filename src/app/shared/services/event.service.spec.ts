@@ -482,4 +482,29 @@ describe('EventService', () => {
         expect(database.length).toBe(0);
         expect(deleted).toBe(true);
     });
+
+    it('adds a service to an event using addServiceToEvent()', () => {
+        // CHANGE THE URL
+        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1/services/1';
+
+        setupConnections(mockBackend, requestedUrl, RequestMethod.Post, {
+            body: {
+                meta: null,
+                data: stubService,
+                error: null
+            },
+            status: 200
+        });
+
+        let serviceAdded: boolean;
+
+        eventService.addServiceToEvent(1, 1).subscribe(
+            success => serviceAdded = success,
+            error => {
+                console.error(error);
+                fail('Failed to handle response using addServiceToEvent()');
+            });
+
+        expect(serviceAdded).toBe(true);
+    });
 });

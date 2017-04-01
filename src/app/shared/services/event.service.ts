@@ -51,6 +51,20 @@ export class EventService {
             .catch(this.handleError);
     }
 
+    addServiceToEvent(eventId: number, serviceId: number): Observable<boolean> {
+        return this.http.post(this.eventsUrl + '/' + eventId + '/services/' + serviceId, {}, this.options)
+            .map((res: Response) => {
+                let body = res.json();
+
+                if (body.error !== null) {
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+            .catch(this.handleError);
+    }
+
     private extractEvent(res: Response): Event {
         let event: Event;
         let data = res.json().data;
