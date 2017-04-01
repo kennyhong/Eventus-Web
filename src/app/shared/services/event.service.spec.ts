@@ -43,35 +43,42 @@ interface EventResponse {
     services: ServiceResponse[];
 }
 
-const stubServiceTag: ServiceTagResponse = {
-    id: 1,
-    name: 'Test Service Tag',
-    created_at: '2000-01-01 00:00:00',
-    updated_at: '2000-01-01 00:00:00'
-};
-
-const stubService: ServiceResponse = {
-    id: 1,
-    name: 'Test Service',
-    cost: 10,
-    created_at: '2000-01-01 00:00:00',
-    updated_at: '2000-01-01 00:00:00',
-    service_tags: [stubServiceTag]
-};
-
-const stubEvent: EventResponse = {
-    id: 1,
-    name: 'Test Event',
-    description: 'Test Description',
-    date: '2000-01-01 00:00:00',
-    created_at: '2000-01-01 00:00:00',
-    updated_at: '2000-01-01 00:00:00',
-    services: [stubService]
-};
-
 describe('EventService', () => {
+    const DATE_PATTERN = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+    const BASE_URL = 'http://eventus.us-west-2.elasticbeanstalk.com';
     let mockBackend: MockBackend;
     let eventService: EventService;
+    let stubServiceTag: ServiceTagResponse;
+    let stubService: ServiceResponse;
+    let stubEvent: EventResponse;
+
+    beforeEach(() => {
+        stubServiceTag = {
+            id: 1,
+            name: 'Test Service Tag',
+            created_at: '2000-01-01 00:00:00',
+            updated_at: '2000-01-01 00:00:00'
+        };
+
+        stubService = {
+            id: 1,
+            name: 'Test Service',
+            cost: 10,
+            created_at: '2000-01-01 00:00:00',
+            updated_at: '2000-01-01 00:00:00',
+            service_tags: [stubServiceTag]
+        };
+
+        stubEvent = {
+            id: 1,
+            name: 'Test Event',
+            description: 'Test Description',
+            date: '2000-01-01 00:00:00',
+            created_at: '2000-01-01 00:00:00',
+            updated_at: '2000-01-01 00:00:00',
+            services: []
+        };
+    });
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -97,14 +104,16 @@ describe('EventService', () => {
     }));
 
     // Helper function to setup tests with simple responeses
-    function setupConnections(backend: MockBackend, url: string, expectedMethod: RequestMethod, options: any) {
+    function setupConnections(backend: MockBackend, expectedUrl: string, expectedMethod: RequestMethod, options: any) {
         backend.connections.subscribe((connection: MockConnection) => {
-            expect(connection.request.method).toBe(expectedMethod);
-            if (connection.request.url === url) {
+            expect(connection.request.method).toBe(expectedMethod, 'Unexpected HTTP request method');
+            if (connection.request.url === expectedUrl) {
                 const responseOptions = new ResponseOptions(options);
                 const response = new Response(responseOptions);
 
                 connection.mockRespond(response);
+            } else {
+                fail('Unexpected URL');
             }
         });
     }
@@ -113,72 +122,45 @@ describe('EventService', () => {
         expect(eventService).toBeDefined();
     });
 
-    // -----------
-    // Event Tests
-    // -----------
     it('creates a new Event object using createEvent()', () => {
-        let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
+        let url = BASE_URL + '/api/events';
 
-        // Setup the backend to create an object based on contents of request body
-        mockBackend.connections.subscribe((connection: MockConnection) => {
-            expect(connection.request.method).toBe(RequestMethod.Post);
-            let reqBody = JSON.parse(connection.request.getBody());
-
-            let options: any = {
-                body: {
-                    meta: null,
-                    data: {
-                        id: 1,
-                        name: reqBody.name,
-                        description: reqBody.description,
-                        date: reqBody.date,
-                        created_at: '2000-01-01 00:00:00',
-                        updated_at: '2000-01-01 00:00:00',
-                        services: []
-                    },
-                    error: null
-                },
-                status: 200
-            };
-
-            if (connection.request.url === url) {
-                const responseOptions = new ResponseOptions(options);
-                const response = new Response(responseOptions);
-
-                connection.mockRespond(response);
-            }
-        });
-
-        let receivedEvent: Event;
         let params: EventParams = {
             name: 'Test Service',
             description: 'Test Description',
             date: '2000-01-01 00:00:00'
         };
 
-        eventService.createEvent(params).subscribe(
-            event => receivedEvent = event,
-            error => {
-                console.error(error);
-                fail('Failed to handle response for creating service');
-            }
-        );
+        stubEvent = Object.assign(stubEvent, params);
 
-        expect(receivedEvent).toEqual(jasmine.any(Event));
-        expect(receivedEvent.id).toBe(1);
-        expect(receivedEvent.name).toBe(params.name);
-        expect(receivedEvent.description).toBe(params.description);
-        expect(receivedEvent.date).toBe(params.date);
-        expect(receivedEvent.date)
-            .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
-        expect(receivedEvent.services.length).toBe(0);
+        setupConnections(mockBackend, url, RequestMethod.Post, {
+            body: {
+                meta: null,
+                data: stubEvent,
+                error: null
+            },
+            status: 200
+        });
+
+        eventService.createEvent(params).subscribe(
+            event => {
+                expect(event).toEqual(jasmine.any(Event));
+                expect(event.id).toBe(1, 'Event ID is incorrect');
+                expect(event.name).toBe(params.name);
+                expect(event.description).toBe(params.description);
+                expect(event.date).toBe(params.date);
+                expect(event.date)
+                    .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
+                expect(event.services.length).toBe(0, 'Unexpected number of services');
+            },
+            error => fail('Failed to handle response for creating service')
+        );
     });
 
     it('retrieves a single Event object using getEvent()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
-        let receivedEvent: Event;
-        let receivedService: Service;
-        let receivedServiceTag: ServiceTag;
+        let requestedUrl = BASE_URL + '/api/events/1';
+
+        stubEvent = Object.assign(stubEvent, {services: [stubService]});
 
         setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
             body: {
@@ -191,42 +173,36 @@ describe('EventService', () => {
 
         eventService.getEvent(1).subscribe(
             event => {
-                receivedEvent = event;
+                expect(event).toEqual(jasmine.any(Event));
+                expect(event.id).toBe(stubEvent.id, 'Event ID is incorrect');
+                expect(event.name).toBe(stubEvent.name);
+                expect(event.description).toBe(stubEvent.description);
+                expect(event.date).toBe(stubEvent.date);
+                expect(event.date).toMatch(DATE_PATTERN);
+                expect(event.services.length).toBe(1, 'Unexpected number of services');
+
+                for (let service of event.services) {
+                    expect(service).toEqual(jasmine.any(Service));
+                    expect(service.id).toBe(stubService.id);
+                    expect(service.name).toBe(stubService.name);
+                    expect(service.cost).toBe(stubService.cost, 'Cost of service is incorrect');
+                    expect(service.serviceTags.length).toBe(1, 'Unexpected number of service tags');
+
+                    for (let serviceTag of service.serviceTags) {
+                        expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                        expect(serviceTag.id).toBe(stubServiceTag.id, 'Service Tag ID is Incorrect');
+                        expect(serviceTag.name).toBe(stubServiceTag.name);
+                    }
+                }
             },
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
-            });
-
-        expect(receivedEvent).toEqual(jasmine.any(Event));
-        expect(receivedEvent.id).toBe(stubEvent.id);
-        expect(receivedEvent.name).toBe(stubEvent.name);
-        expect(receivedEvent.description).toBe(stubEvent.description);
-        expect(receivedEvent.date).toBe(stubEvent.date);
-        expect(receivedEvent.date)
-            .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
-        expect(receivedEvent.services.length).toBe(1);
-
-        receivedService = receivedEvent.services[0];
-
-        expect(receivedService).toEqual(jasmine.any(Service));
-        expect(receivedService.id).toBe(stubService.id);
-        expect(receivedService.name).toBe(stubService.name);
-        expect(receivedService.cost).toBe(stubService.cost);
-        expect(receivedService.serviceTags.length).toBe(1);
-
-        receivedServiceTag = receivedService.serviceTags[0];
-
-        expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
-        expect(receivedServiceTag.id).toBe(stubServiceTag.id);
-        expect(receivedServiceTag.name).toBe(stubServiceTag.name);
+            error => fail(error)
+        );
     });
 
     it('retrieves an Array of valid Event objects using getEvents()', () => {
         const NUM_EVENTS = 5;
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
+        let requestedUrl = BASE_URL + '/api/events';
         let stubEvents: EventResponse[] = [];
-        let receivedEvents: Event[];
 
         for (let i = 1; i <= NUM_EVENTS; i++) {
             let event: EventResponse = {
@@ -252,52 +228,41 @@ describe('EventService', () => {
 
         eventService.getEvents().subscribe(
             events => {
-                receivedEvents = events;
-            },
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
-            });
+                expect(events).toEqual(jasmine.any(Array));
+                expect(events.length).toBe(NUM_EVENTS, 'Unexpected number of events');
 
-        expect(receivedEvents).toEqual(jasmine.any(Array));
-        expect(receivedEvents.length).toBe(NUM_EVENTS);
+                for (let i = 0; i < events.length; i++) {
+                    expect(events[i]).toEqual(jasmine.any(Event));
+                    expect(events[i].id).toBe(i + 1, 'Event ID is incorrect');
+                    expect(events[i].name).toBe(stubEvent.name);
+                    expect(events[i].description).toBe(stubEvent.description);
+                    expect(events[i].date).toBe(stubEvent.date);
+                    expect(events[i].date).toMatch(DATE_PATTERN);
+                    expect(events[i].services.length).toBe(1, 'Unexpected number of services');
 
-        for (let index in receivedEvents) {
-            // index is a string, so we need to cast to number before performing arithmetic
-            let i = Number(index);
+                    for (let service of events[i].services) {
+                        expect(service).toEqual(jasmine.any(Service));
+                        expect(service.id).toBe(stubService.id, 'Service ID is incorrect');
+                        expect(service.name).toBe(stubService.name);
+                        expect(service.cost).toBe(stubService.cost);
+                        expect(service.serviceTags.length).toBe(1, 'Unexpected number of service tags');
 
-            let event = receivedEvents[i];
-
-            expect(event).toEqual(jasmine.any(Event));
-            expect(event.id).toBe(i + 1);
-            expect(event.name).toBe(stubEvent.name);
-            expect(event.description).toBe(stubEvent.description);
-            expect(event.date).toBe(stubEvent.date);
-            expect(event.date)
-                .toMatch(/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/);
-            expect(event.services.length).toBe(1);
-
-            for (let service of event.services) {
-                expect(service).toEqual(jasmine.any(Service));
-                expect(service.id).toBe(stubService.id);
-                expect(service.name).toBe(stubService.name);
-                expect(service.cost).toBe(stubService.cost);
-                expect(service.serviceTags.length).toBe(1);
-
-                for (let tag of service.serviceTags) {
-                    expect(tag).toEqual(jasmine.any(ServiceTag));
-                    expect(tag.id).toBe(stubServiceTag.id);
-                    expect(tag.name).toBe(stubServiceTag.name);
+                        for (let tag of service.serviceTags) {
+                            expect(tag).toEqual(jasmine.any(ServiceTag));
+                            expect(tag.id).toBe(stubServiceTag.id, 'Service Tag ID is incorrect');
+                            expect(tag.name).toBe(stubServiceTag.name);
+                        }
+                    }
                 }
-            }
-        }
+            },
+            error => fail(error)
+        );
     });
 
     it('handles attempting to retrieve an Event that is not in the database using getEvent()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
-        let receivedEvent: Event;
+        let url = BASE_URL + '/api/events/1';
 
-        setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
+        setupConnections(mockBackend, url, RequestMethod.Get, {
             body: {
                 meta: null,
                 data: null,
@@ -308,26 +273,21 @@ describe('EventService', () => {
 
         eventService.getEvent(1).subscribe(
             event => {
-                receivedEvent = event;
+                expect(event).toEqual(jasmine.any(Event));
+                expect(event.id).toBe(-1, 'Event ID is incorrect');
+                expect(event.name).toBe('');
+                expect(event.description).toBe('');
+                expect(event.date).toBe('');
+                expect(event.services.length).toBe(0, 'Unexpected number of services');
             },
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
-            });
-
-        expect(receivedEvent).toEqual(jasmine.any(Event));
-        expect(receivedEvent.id).toBe(-1);
-        expect(receivedEvent.name).toBe('');
-        expect(receivedEvent.description).toBe('');
-        expect(receivedEvent.date).toBe('');
-        expect(receivedEvent.services.length).toBe(0);
+            error => fail(error)
+        );
     });
 
     it('handles attempting to retrieve all Event from an empty database using getEvents()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
-        let receivedEvents: Event[];
+        let url = BASE_URL + '/api/events';
 
-        setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
+        setupConnections(mockBackend, url, RequestMethod.Get, {
             body: {
                 meta: null,
                 data: [],
@@ -337,155 +297,70 @@ describe('EventService', () => {
         });
 
         eventService.getEvents().subscribe(
-            events => receivedEvents = events,
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
-            });
-
-        expect(receivedEvents).toEqual(jasmine.any(Array));
-        expect(receivedEvents.length).toBe(0);
+            events => {
+                expect(events).toEqual(jasmine.any(Array));
+                expect(events.length).toBe(0);
+            },
+            error => fail(error)
+        );
     });
 
     it('updates an event in the database using updateEvent()', () => {
-        let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
+        let url = BASE_URL + '/api/events/1';
 
-        let myEvent: EventResponse = {
-            id: 1,
-            name: 'My Event',
-            description: 'My Description',
-            date: '2000-01-01 00:00:00',
-            created_at: '2000-01-01 00:00:00',
-            updated_at: '2000-01-01 00:00:00',
-            services: []
-        };
-
-        // Setup the backend to create an object based on contents of request body
-        mockBackend.connections.subscribe((connection: MockConnection) => {
-            expect(connection.request.method).toBe(RequestMethod.Put);
-            let reqBody = JSON.parse(connection.request.getBody());
-
-            myEvent.name = reqBody.name;
-            myEvent.description = reqBody.description;
-            myEvent.date = reqBody.date;
-            myEvent.updated_at = '2000-01-01 00:00:01';
-
-            let options: any = {
-                body: {
-                    meta: null,
-                    data: myEvent,
-                    error: null
-                },
-                status: 200
-            };
-
-            if (connection.request.url === url) {
-                const responseOptions = new ResponseOptions(options);
-                const response = new Response(responseOptions);
-
-                connection.mockRespond(response);
-            }
-        });
-
-        let receivedEvent: Event;
         let params: EventParams = {
             name: 'My Updated Event',
             description: 'My Updated Description',
             date: '2000-01-02 00:00:00'
         };
 
-        // Preconditions
-        expect(myEvent.id).toBe(1);
-        expect(myEvent.name).toBe('My Event');
-        expect(myEvent.description).toBe('My Description');
-        expect(myEvent.date).toBe('2000-01-01 00:00:00');
-
-        // The params are different than what myEvent currently is
-        expect(myEvent.name).not.toBe(params.name);
-        expect(myEvent.description).not.toBe(params.description);
-        expect(myEvent.date).not.toBe(params.date);
+        stubEvent = Object.assign(stubEvent, params)
+;
+        setupConnections(mockBackend, url, RequestMethod.Put, {
+            body: {
+                meta: null,
+                data: stubEvent,
+                error: null
+            },
+            status: 200
+        });
 
         eventService.updateEvent(1, params).subscribe(
-            event => receivedEvent = event,
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
-            });
-
-        // The received event contains the changes
-        expect(receivedEvent.id).toBe(1);
-        expect(receivedEvent.name).toBe(params.name);
-        expect(receivedEvent.description).toBe(params.description);
-        expect(receivedEvent.date).toBe(params.date);
-
-        // The event in the "database" actually changed to what we passed
-        expect(myEvent.id).toBe(1);
-        expect(myEvent.name).toBe(params.name);
-        expect(myEvent.description).toBe(params.description);
-        expect(myEvent.date).toBe(params.date);
+            event => {
+                expect(event).toEqual(jasmine.any(Event));
+                expect(event.id).toBe(1, 'event.id');
+                expect(event.name).toBe(params.name);
+                expect(event.description).toBe(params.description);
+                expect(event.date).toBe(params.date);
+                expect(event.date).toMatch(DATE_PATTERN);
+                expect(event.services.length).toBe(0, 'event.services.length');
+            },
+            error => fail(error)
+        );
     });
 
     it('deletes an event from the database using deleteEvent()', () => {
-        let url = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1';
+        let url = BASE_URL + '/api/events/1';
 
-        let database: EventResponse[] = [
-            {
-                id: 1,
-                name: 'Test Event',
-                description: 'Test Descriptions',
-                date: '2000-01-01 00:00:00',
-                created_at: '2000-01-01 00:00:00',
-                updated_at: '2000-01-01 00:00:00',
-                services: []
-
-            }
-        ];
-
-        // Setup the backend to create an object based on contents of request body
-        mockBackend.connections.subscribe((connection: MockConnection) => {
-            expect(connection.request.method).toBe(RequestMethod.Delete);
-            let success = false;
-
-            if (connection.request.method === RequestMethod.Delete) {
-                database = [];
-                success = true;
-            } else {
-                fail('Request verb is not DELETE');
-            }
-
-            let options: any = {
-                body: {
-                    meta: {
-                        success: success
-                    },
-                    data: null,
-                    error: null
+        setupConnections(mockBackend, url, RequestMethod.Delete, {
+            body: {
+                meta: {
+                    success: true
                 },
-                status: 200
-            };
-
-            if (connection.request.url === url) {
-                const responseOptions = new ResponseOptions(options);
-                const response = new Response(responseOptions);
-
-                connection.mockRespond(response);
-            }
+                data: null,
+                error: null
+            },
+            status: 200
         });
 
-        let deleted: boolean;
-
         eventService.deleteEvent(1).subscribe(
-            success => deleted = success,
+            success => expect(success).toBe(true),
             error => fail(error)
         );
-
-        expect(database.length).toBe(0);
-        expect(deleted).toBe(true);
     });
 
     it('adds a service to an event using addServiceToEvent()', () => {
-        // CHANGE THE URL
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events/1/services/1';
+        let requestedUrl = BASE_URL + '/api/events/1/services/1';
 
         setupConnections(mockBackend, requestedUrl, RequestMethod.Post, {
             body: {
@@ -496,15 +371,9 @@ describe('EventService', () => {
             status: 200
         });
 
-        let serviceAdded: boolean;
-
         eventService.addServiceToEvent(1, 1).subscribe(
-            success => serviceAdded = success,
-            error => {
-                console.error(error);
-                fail('Failed to handle response using addServiceToEvent()');
-            });
-
-        expect(serviceAdded).toBe(true);
+            success => expect(success).toBe(true),
+            error => fail(error)
+        );
     });
 });
