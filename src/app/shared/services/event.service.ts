@@ -67,11 +67,10 @@ export class EventService {
 
     private extractEvent(res: Response): Event {
         let event: Event;
-        let data = res.json().data;
+        let body = res.json();
 
-        if (data === null) {
-            event = new Event(-1, '', '', '', []);
-        } else {
+        if (body && body.data && !body.error) {
+            let data = body.data;
             let services: Service[] = [];
 
             for (let service of data.services) {
@@ -83,6 +82,8 @@ export class EventService {
                 services.push(new Service(service.id, service.name, service.cost, serviceTags));
             }
             event = new Event(data.id, data.name, data.description, data.date, services);
+        } else {
+            event = new Event(-1, '', '', '', []);
         }
 
         return event;
@@ -90,10 +91,10 @@ export class EventService {
 
     private extractEvents(res: Response): Event[] {
         let events: Event[] = [];
-        let data = res.json().data;
+        let body = res.json();
 
-        if (data !== null) {
-            for (let event of data) {
+        if (body && body.data && !body.error) {
+            for (let event of body.data) {
                 let services: Service[] = [];
 
                 for (let service of event.services) {

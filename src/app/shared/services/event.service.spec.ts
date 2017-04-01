@@ -48,9 +48,11 @@ describe('EventService', () => {
     const BASE_URL = 'http://eventus.us-west-2.elasticbeanstalk.com';
     let mockBackend: MockBackend;
     let eventService: EventService;
+
     let stubServiceTag: ServiceTagResponse;
     let stubService: ServiceResponse;
     let stubEvent: EventResponse;
+    let stubParams: EventParams;
 
     beforeEach(() => {
         stubServiceTag = {
@@ -77,6 +79,12 @@ describe('EventService', () => {
             created_at: '2000-01-01 00:00:00',
             updated_at: '2000-01-01 00:00:00',
             services: []
+        };
+
+        stubParams = {
+            name: 'Test Service',
+            description: 'Test Description',
+            date: '2000-01-01 00:00:00'
         };
     });
 
@@ -126,13 +134,7 @@ describe('EventService', () => {
         it('creates an event with valid parameters', () => {
             let url = BASE_URL + '/api/events';
 
-            let params: EventParams = {
-                name: 'Test Service',
-                description: 'Test Description',
-                date: '2000-01-01 00:00:00'
-            };
-
-            stubEvent = Object.assign(stubEvent, params);
+            stubEvent = Object.assign(stubEvent, stubParams);
 
             setupConnections(mockBackend, url, RequestMethod.Post, {
                 body: {
@@ -143,13 +145,13 @@ describe('EventService', () => {
                 status: 200
             });
 
-            eventService.createEvent(params).subscribe(
+            eventService.createEvent(stubParams).subscribe(
                 event => {
                     expect(event).toEqual(jasmine.any(Event));
                     expect(event.id).toBe(1, 'event.id');
-                    expect(event.name).toBe(params.name);
-                    expect(event.description).toBe(params.description);
-                    expect(event.date).toBe(params.date);
+                    expect(event.name).toBe(stubParams.name);
+                    expect(event.description).toBe(stubParams.description);
+                    expect(event.date).toBe(stubParams.date);
                     expect(event.date).toMatch(DATE_PATTERN);
                     expect(event.services.length).toBe(0, 'event.services.length');
                 },
@@ -157,7 +159,7 @@ describe('EventService', () => {
             );
         });
 
-        it('handles creating an event with undefined parameters', () => {
+        it('handles creating an event when params is undefined', () => {
             let url = BASE_URL + '/api/events';
 
             setupConnections(mockBackend, url, RequestMethod.Post, {
@@ -183,16 +185,111 @@ describe('EventService', () => {
                 error => fail(error)
             );
         });
-        it('handles creating an event with null parameters');
+
+        it('handles creating an event when params is null', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'QueryException',
+                        detail: 'SQLSTATE[HY000]: General error: 1364'
+                    },
+                },
+                status: 200
+            });
+
+            eventService.createEvent(null).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: null,
+                status: 200
+            });
+
+            eventService.createEvent(null).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: {},
+                status: 200
+            });
+
+            eventService.createEvent(null).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with event, but also an error', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: {
+                    data: stubEvent,
+                    error: {
+                        title: 'TestException',
+                        detail: 'SQLSTATE[AA000]: General error: 0000'
+                    }
+                },
+                status: 200
+            });
+
+            eventService.createEvent(null).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
     });
 
     describe('getEvent(eventId: number)', () => {
         it('retrieves a single event', () => {
-            let requestedUrl = BASE_URL + '/api/events/1';
+            let url = BASE_URL + '/api/events/1';
 
             stubEvent = Object.assign(stubEvent, { services: [stubService] });
 
-            setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
+            setupConnections(mockBackend, url, RequestMethod.Get, {
                 body: {
                     meta: null,
                     data: stubEvent,
@@ -253,28 +350,69 @@ describe('EventService', () => {
                 error => fail(error)
             );
         });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/events/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: null,
+                status: 200
+            });
+
+            eventService.getEvent(1).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/events/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {},
+                status: 200
+            });
+
+            eventService.getEvent(1).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
     }); // end getEvent()
 
     describe('getEvents()', () => {
-        it('retrieves an array of events', () => {
-            const NUM_EVENTS = 5;
-            let requestedUrl = BASE_URL + '/api/events';
-            let stubEvents: EventResponse[] = [];
+        const NUM_EVENTS = 5;
+        let stubEvents: EventResponse[];
+
+        beforeEach(() => {
+            let event: EventResponse;
+            stubEvents = [];
 
             for (let i = 1; i <= NUM_EVENTS; i++) {
-                let event: EventResponse = {
-                    id: i,
-                    name: 'Test Event',
-                    description: 'Test Description',
-                    date: '2000-01-01 00:00:00',
-                    created_at: '2000-01-01 00:00:00',
-                    updated_at: '2000-01-01 00:00:00',
-                    services: [stubService]
-                };
-                stubEvents.push(event);
+                stubEvent = Object.assign(stubEvent, { services: [stubService] });
+                event = Object.assign(stubEvent, { id: i });
+                stubEvents.push(Object.assign({}, stubEvent));
             }
+        });
 
-            setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
+        it('retrieves an array of events', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
                 body: {
                     meta: null,
                     data: stubEvents,
@@ -332,6 +470,40 @@ describe('EventService', () => {
                 events => {
                     expect(events).toEqual(jasmine.any(Array));
                     expect(events.length).toBe(0);
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: null,
+                status: 200
+            });
+
+            eventService.getEvents().subscribe(
+                events => {
+                    expect(events).toEqual(jasmine.any(Array));
+                    expect(events.length).toBe(0, 'events.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/events';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {},
+                status: 200
+            });
+
+            eventService.getEvents().subscribe(
+                events => {
+                    expect(events).toEqual(jasmine.any(Array));
+                    expect(events.length).toBe(0, 'events.length');
                 },
                 error => fail(error)
             );
@@ -402,9 +574,9 @@ describe('EventService', () => {
 
     describe('addServiceToEvent(eventId: number, serviceId: number)', () => {
         it('adds a service to an event', () => {
-            let requestedUrl = BASE_URL + '/api/events/1/services/1';
+            let url = BASE_URL + '/api/events/1/services/1';
 
-            setupConnections(mockBackend, requestedUrl, RequestMethod.Post, {
+            setupConnections(mockBackend, url, RequestMethod.Post, {
                 body: {
                     meta: null,
                     data: stubService,
