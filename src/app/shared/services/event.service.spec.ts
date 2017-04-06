@@ -521,6 +521,7 @@ describe('EventService', () => {
             };
 
             stubEvent = Object.assign(stubEvent, params);
+
             setupConnections(mockBackend, url, RequestMethod.Put, {
                 body: {
                     meta: null,
@@ -544,9 +545,92 @@ describe('EventService', () => {
             );
         });
 
-        it('handles updating an event that doesn\'t exist');
-        it('handles updating an event with undefined parameters');
-        it('handles updating an event with null parameters');
+        it('handles updating an event that doesn\'t exist', () => {
+            let url = BASE_URL + '/api/events/999';
+
+            let params: EventParams = {
+                name: 'My Updated Event',
+                description: 'My Updated Description',
+                date: '2000-01-02 00:00:00'
+            };
+
+            setupConnections(mockBackend, url, RequestMethod.Put, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'ModelNotFoundException',
+                        detail: 'No query results for model [App\\Event] 999'
+                    }
+                },
+                status: 200
+            });
+
+            eventService.updateEvent(999, params).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles updating an event with undefined parameters', () => {
+            let url = BASE_URL + '/api/events/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Put, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'QueryException',
+                        detail: 'SQLSTATE[HY000]: General error: 1364'
+                    },
+                },
+                status: 200
+            });
+
+            eventService.updateEvent(1, undefined).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles updating an event with null parameters', () => {
+            let url = BASE_URL + '/api/events/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Put, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'QueryException',
+                        detail: 'SQLSTATE[HY000]: General error: 1364'
+                    },
+                },
+                status: 200
+            });
+
+            eventService.updateEvent(1, null).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(-1, 'event.id');
+                    expect(event.name).toBe('');
+                    expect(event.description).toBe('');
+                    expect(event.date).toBe('');
+                    expect(event.services.length).toBe(0, 'event.services.length');
+                },
+                error => fail(error)
+            );
+        });
     }); // updateEvent()
 
     describe('deleteEvent(eventId: number)', () => {
@@ -569,7 +653,54 @@ describe('EventService', () => {
                 error => fail(error)
             );
         });
-        it('handles deleting an event that doesn\'t exist');
+
+        it('handles deleting an event that doesn\'t exist', () => {
+            let url = BASE_URL + '/api/events/999';
+
+            setupConnections(mockBackend, url, RequestMethod.Delete, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'ModelNotFoundException',
+                        detail: 'No query results for model [App\\Event] 999'
+                    }
+                },
+                status: 200
+            });
+
+            eventService.deleteEvent(999).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/events/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Delete, {
+                body: null,
+                status: 200
+            });
+
+            eventService.deleteEvent(1).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/events/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Delete, {
+                body: {},
+                status: 200
+            });
+
+            eventService.deleteEvent(1).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
     }); // end deleteEvent()
 
     describe('addServiceToEvent(eventId: number, serviceId: number)', () => {
@@ -591,7 +722,72 @@ describe('EventService', () => {
             );
         });
 
-        it('handles adding a service that doesn\'t exist to an event');
-        it('handles adding a service to an event that doesn\'t exist');
+        it('handles adding a service that doesn\'t exist to an event', () => {
+            let url = BASE_URL + '/api/events/999/services/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'EventusException',
+                        detail: 'Failed to add Service to Event. No such Service exists.'
+                    }
+                },
+                status: 200
+            });
+
+            eventService.addServiceToEvent(999, 1).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
+
+        it('handles adding a service to an event that doesn\'t exist', () => {
+            let url = BASE_URL + '/api/events/1/services/999';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: {
+                    data: null,
+                    error: {
+                        title: 'ModelNotFoundException',
+                        detail: 'No query results for model [App\\Event] 999'
+                    }
+                },
+                status: 200
+            });
+
+            eventService.addServiceToEvent(1, 999).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/events/1/services/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: null,
+                status: 200
+            });
+
+            eventService.addServiceToEvent(1, 1).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/events/1/services/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Post, {
+                body: {},
+                status: 200
+            });
+
+            eventService.addServiceToEvent(1, 1).subscribe(
+                success => expect(success).toBe(false),
+                error => fail(error)
+            );
+        });
     }); // end addServiceToEvent()
 });

@@ -56,10 +56,10 @@ export class EventService {
             .map((res: Response) => {
                 let body = res.json();
 
-                if (body.error !== null) {
-                    return false;
-                } else {
+                if (body && body.data && !body.error) {
                     return true;
+                } else {
+                    return false;
                 }
             })
             .catch(this.handleError);
@@ -113,8 +113,13 @@ export class EventService {
     }
 
     private extractSuccess(res: Response): boolean {
-        let meta = res.json().meta;
-        return meta.success || {};
+        let body = res.json();
+
+        if (body && body.meta && !body.error) {
+            return body.meta.success;
+        } else {
+            return false;
+        }
     }
 
     private handleError(error: Response | any) {
