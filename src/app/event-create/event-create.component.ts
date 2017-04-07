@@ -39,7 +39,7 @@ export class EventCreateComponent {
             return;
         }
         this.parseForm();
-        this.eventService.addEvent(this.eventParams)
+        this.eventService.createEvent(this.eventParams)
             .subscribe(
                 event => {
                     this.createdEvent = event;
