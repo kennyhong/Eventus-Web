@@ -17,11 +17,12 @@ export class EventDetailComponent {
     errorMessage: {};
     emptyEvent: Event;
     services: Service[] = [];
+    selectedService: Service;
 
     constructor(private eventService: EventService, private serviceService: ServiceService) { }
 
-    deleteEvent(id: number) {
-        this.eventService.deleteEvent(id)
+    deleteEvent(eventId: number) {
+        this.eventService.deleteEvent(eventId)
             .subscribe(
                 success => {
                     this.reloadEvents.emit();
@@ -34,6 +35,19 @@ export class EventDetailComponent {
         this.serviceService.getServices()
             .subscribe(
             services => this.services = services,
+            error => this.errorMessage = <any>error);
+    }
+
+    selectService(service: Service) {
+        this.selectedService = service;
+    }
+
+    addServiceToEvent(serviceId: number) {
+        this.eventService.addServiceToEvent(this.event.id, serviceId)
+            .subscribe(
+            success => {
+                this.reloadEvents.emit();
+            },
             error => this.errorMessage = <any>error);
     }
 }
