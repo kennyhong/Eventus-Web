@@ -1,11 +1,9 @@
-// import { Observable } from 'rxjs/Observable';
-// import 'rxjs/add/observable/of';
-
 import { } from '@types/jasmine';
 import { async, getTestBed, TestBed } from '@angular/core/testing';
 import {
     BaseRequestOptions,
     Http,
+    RequestMethod,
     Response,
     ResponseOptions,
     XHRBackend
@@ -34,25 +32,56 @@ interface ServiceResponse {
     service_tags: ServiceTagResponse[];
 }
 
-const stubServiceTag: ServiceTagResponse = {
-    id: 1,
-    name: 'Test Service Tag',
-    created_at: '2000-01-01 00:00:00',
-    updated_at: '2000-01-01 00:00:00'
+const NULL_RESPONSE: any = {
+    body: null,
+    status: 200
 };
 
-const stubService: ServiceResponse = {
-    id: 1,
-    name: 'Test Service',
-    cost: 10,
-    created_at: '2000-01-01 00:00:00',
-    updated_at: '2000-01-01 00:00:00',
-    service_tags: [stubServiceTag]
+const EMPTY_RESPONSE: any = {
+    body: {},
+    status: 200
 };
 
 describe('ServiceService', () => {
+    const BASE_URL = 'http://eventus.us-west-2.elasticbeanstalk.com';
+
     let mockBackend: MockBackend;
     let serviceService: ServiceService;
+
+    let stubServiceTag: ServiceTagResponse;
+    let stubService: ServiceResponse;
+
+    function setupConnections(backend: MockBackend, expectedUrl: string, expectedMethod: RequestMethod, options: any) {
+        backend.connections.subscribe((connection: MockConnection) => {
+            expect(connection.request.method).toBe(expectedMethod, 'Unexpected HTTP request method');
+            if (connection.request.url === expectedUrl) {
+                const responseOptions = new ResponseOptions(options);
+                const response = new Response(responseOptions);
+
+                connection.mockRespond(response);
+            } else {
+                fail('Unexpected URL');
+            }
+        });
+    }
+
+    beforeEach(() => {
+        stubServiceTag = {
+            id: 1,
+            name: 'Test Service Tag',
+            created_at: '2000-01-01 00:00:00',
+            updated_at: '2000-01-01 00:00:00'
+        };
+
+        stubService = {
+            id: 1,
+            name: 'Test Service',
+            cost: 10,
+            created_at: '2000-01-01 00:00:00',
+            updated_at: '2000-01-01 00:00:00',
+            service_tags: [stubServiceTag]
+        };
+    });
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -77,278 +106,371 @@ describe('ServiceService', () => {
         serviceService = testbed.get(ServiceService);
     }));
 
-    // Helper function to setup tests with simple responeses
-    function setupConnections(backend: MockBackend, url: string, options: any) {
-        backend.connections.subscribe((connection: MockConnection) => {
-            if (connection.request.url === url) {
-                const responseOptions = new ResponseOptions(options);
-                const response = new Response(responseOptions);
-
-                connection.mockRespond(response);
-            }
-        });
-    }
-
-    it('should create an instance of ServiceService', () => {
+    it('creates an instance of ServiceService', () => {
         expect(serviceService).toBeDefined();
     });
 
-    // -------------
-    // Service Tests
-    // -------------
-    it('should receive a single Service object using getService()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services/1';
-        let receivedService: Service;
+    describe('getService()', () => {
+        it('retrieves a single service', () => {
+            let url = BASE_URL + '/api/services/1';
 
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: stubService,
-                error: null
-            },
-            status: 200
-        });
-
-        serviceService.getService(1).subscribe(
-            service => receivedService = service,
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: stubService,
+                    error: null
+                },
+                status: 200
             });
 
-        expect(receivedService.id).toBe(stubService.id);
-        expect(receivedService.name).toBe(stubService.name);
-        expect(receivedService.cost).toBe(stubService.cost);
-    });
+            serviceService.getService(1).subscribe(
+                service => {
+                    expect(service.id).toBe(stubService.id);
+                    expect(service.name).toBe(stubService.name);
+                    expect(service.cost).toBe(stubService.cost);
+                    expect(service.serviceTags).toEqual(jasmine.any(Array));
 
-    it('should receive an Array<Service> object using getServices()', () => {
+                    for (let serviceTag of service.serviceTags) {
+                        expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                        expect(serviceTag.id).toBe(stubServiceTag.id);
+                        expect(serviceTag.name).toBe(stubServiceTag.name);
+                    }
+                },
+                error => {
+                    console.error(error);
+                    fail('Failed to receive response from MockBackend');
+                }
+            );
+        });
+
+        it('handles requesting a service that is not in the database', () => {
+            let url = BASE_URL + '/api/services/999';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: null,
+                    error: null
+                },
+                status: 200
+            });
+
+            serviceService.getService(999).subscribe(
+                service => {
+                    expect(service).toEqual(jasmine.any(Service));
+                    expect(service.id).toBe(-1);
+                    expect(service.name).toBe('');
+                    expect(service.cost).toBe(0);
+                    expect(service.serviceTags.length).toBe(0);
+                },
+                error => {
+                    console.error(error);
+                    fail('Failed to handle request service not in database');
+                }
+            );
+        });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/services/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, NULL_RESPONSE);
+
+            serviceService.getService(1).subscribe(
+                service => {
+                    expect(service).toEqual(jasmine.any(Service));
+                    expect(service.id).toBe(-1);
+                    expect(service.name).toBe('');
+                    expect(service.cost).toBe(0);
+                    expect(service.serviceTags.length).toBe(0);
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/services/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, EMPTY_RESPONSE);
+
+            serviceService.getService(1).subscribe(
+                service => {
+                    expect(service).toEqual(jasmine.any(Service));
+                    expect(service.id).toBe(-1);
+                    expect(service.name).toBe('');
+                    expect(service.cost).toBe(0);
+                    expect(service.serviceTags.length).toBe(0);
+                },
+                error => fail(error)
+            );
+        });
+    }); // end getService()
+
+    describe('getServices()', () => {
         const NUM_SERVICES = 5;
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services';
-        let stubServices: ServiceResponse[] = [];
-        let receivedServices: Service[];
+        let stubServices: ServiceResponse[];
 
-        // Generate a list of services to respond with
-        for (let i = 1; i <= NUM_SERVICES; i++) {
-            let item: ServiceResponse = {
-                id: i,
-                name: 'Test Service',
-                cost: 100,
-                created_at: '2000-01-01 00:00:00',
-                updated_at: '2000-01-01 00:00:00',
-                service_tags: [stubServiceTag]
-            };
-            stubServices.push(item);
-        }
+        beforeEach(() => {
+            let service: ServiceResponse;
+            stubServices = [];
 
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: stubServices,
-                error: null
-            },
-            status: 200
+            for (let i = 1; i <= NUM_SERVICES; i++) {
+                service = Object.assign(stubService, { id: i });
+                stubServices.push(Object.assign({}, service));
+            }
         });
 
-        serviceService.getServices().subscribe(
-            services => receivedServices = services,
-            error => {
-                console.error(error);
-                fail('Failed to receive Array<Service> from MockBackend');
+        it('retrieves an array of services', () => {
+            let url = BASE_URL + '/api/services';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: stubServices,
+                    error: null
+                },
+                status: 200
             });
 
-        expect(receivedServices).toEqual(jasmine.any(Array));
-        expect(receivedServices.length).toBe(NUM_SERVICES, 'received unexpected number of services');
+            serviceService.getServices().subscribe(
+                services => {
+                    expect(services).toEqual(jasmine.any(Array));
+                    expect(services.length).toBe(NUM_SERVICES, 'received unexpected number of services');
 
-        for (let index in receivedServices) {
-            // index is a string, so we need to cast to number before performing arithmetic
-            let i = Number(index);
+                    for (let i = 0; i < services.length; i++) {
+                        expect(services[i]).toEqual(jasmine.any(Service));
 
-            expect(receivedServices[i]).toEqual(jasmine.any(Service));
+                        expect(services[i].id).toBe(stubServices[i].id, 'service.id');
+                        expect(services[i].name).toBe(stubServices[i].name);
+                        expect(services[i].cost).toBe(stubServices[i].cost, 'service.cost');
 
-            // IDs are 1 indexed, not 0 indexed
-            expect(receivedServices[i].id).toBe(i + 1);
-            expect(receivedServices[i].name).toBe('Test Service');
-            expect(receivedServices[i].cost).toBe(100);
-        }
-    });
+                        expect(services[i].serviceTags).toEqual(jasmine.any(Array));
+                        expect(services[i].serviceTags.length).toBe(1, 'service.serviceTags.length');
 
-    it('should handle requesting a Service that is not in the database using getService()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services/999';
-        let receivedService: Service;
-
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: null,
-                error: null
-            },
-            status: 200
+                        for (let serviceTag of services[i].serviceTags) {
+                            expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                            expect(serviceTag.id).toBe(stubServiceTag.id, 'serviceTag.id');
+                            expect(serviceTag.name).toBe(stubServiceTag.name);
+                        }
+                    }
+                },
+                error =>  fail(error)
+            );
         });
 
-        serviceService.getService(999).subscribe(
-            service => receivedService = service,
-            error => {
-                console.error(error);
-                fail('Failed to handle request service not in database');
-            }
-        );
+        it('handles requesting services from an empty database', () => {
+            let url = BASE_URL + '/api/services';
 
-        expect(receivedService).toEqual(jasmine.any(Service));
-        expect(receivedService.id).toBe(-1);
-        expect(receivedService.name).toBe('');
-        expect(receivedService.cost).toBe(0);
-        expect(receivedService.serviceTags.length).toBe(0);
-    });
-
-    it('should handle requesting an Array<Service> on an empty database using getServices()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/services';
-        let receivedServices: Service[];
-
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: [],
-                error: null
-            },
-            status: 200
-        });
-
-        serviceService.getServices().subscribe(
-            services => receivedServices = services,
-            error => {
-                console.error(error);
-                fail('Failed to handle response for non-existent service');
-            }
-        );
-
-        expect(receivedServices.length).toBe(0);
-    });
-
-
-    // ----------------
-    // ServiceTag Tests
-    // ----------------
-    it('should receive a single ServiceTag object using getServiceTag()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags/1';
-        let receivedServiceTag: ServiceTag;
-
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: stubServiceTag,
-                error: null
-            },
-            status: 200
-        });
-
-        serviceService.getServiceTag(1).subscribe(
-            serviceTag => receivedServiceTag = serviceTag,
-            error => {
-                console.error(error);
-                fail('Failed to receive response from MockBackend');
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
             });
 
-        expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
-        expect(receivedServiceTag.id).toBe(stubServiceTag.id);
-        expect(receivedServiceTag.name).toBe(stubServiceTag.name);
-    });
+            serviceService.getServices().subscribe(
+                services => {
+                    expect(services).toEqual(jasmine.any(Array));
+                    expect(services.length).toBe(0);
+                },
+                error => fail(error)
+            );
+        });
 
-    it('should receive Array<ServiceTag> using getServiceTags()', () => {
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/services';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, NULL_RESPONSE);
+
+            serviceService.getServices().subscribe(
+                services => {
+                    expect(services).toEqual(jasmine.any(Array));
+                    expect(services.length).toBe(0);
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/services';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, EMPTY_RESPONSE);
+
+            serviceService.getServices().subscribe(
+                services => {
+                    expect(services).toEqual(jasmine.any(Array));
+                    expect(services.length).toBe(0, 'event.serviceTags.length');
+                },
+                error => fail(error)
+            );
+        });
+    }); // end getServices()
+
+    describe('getServiceTag(serviceTagId: number)', () => {
+        it('retrieves a single service tag', () => {
+            let url = BASE_URL + '/api/service_tags/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: stubServiceTag,
+                    error: null
+                },
+                status: 200
+            });
+
+            serviceService.getServiceTag(1).subscribe(
+                serviceTag => {
+                    expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                    expect(serviceTag.id).toBe(stubServiceTag.id);
+                    expect(serviceTag.name).toBe(stubServiceTag.name);
+                },
+                error => fail('Failed to receive response from MockBackend')
+            );
+        });
+
+        it('handles requesting a service tag that is not in the database', () => {
+            let requestedUrl = BASE_URL + '/api/service_tags/999';
+
+            setupConnections(mockBackend, requestedUrl, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: null,
+                    error: null
+                },
+                status: 200
+            });
+
+            serviceService.getServiceTag(999).subscribe(
+                serviceTag => {
+                    expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                    expect(serviceTag.id).toBe(-1);
+                    expect(serviceTag.name).toBe('');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/service_tags/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, NULL_RESPONSE);
+
+            serviceService.getServiceTag(1).subscribe(
+                serviceTag => {
+                    expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                    expect(serviceTag.id).toBe(-1);
+                    expect(serviceTag.name).toBe('');
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/service_tags/1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, EMPTY_RESPONSE);
+
+            serviceService.getServiceTag(1).subscribe(
+                serviceTag => {
+                    expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                    expect(serviceTag.id).toBe(-1);
+                    expect(serviceTag.name).toBe('');
+                },
+                error => fail(error)
+            );
+        });
+    }); // end getServiceTag()
+
+    describe('getServiceTags()', () => {
         const NUM_SERVICES_TAGS = 5;
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
-        let stubServicesTags: ServiceTagResponse[] = [];
-        let receivedServicesTags: ServiceTag[];
+        let stubServiceTags: ServiceTagResponse[];
 
-        // Generate a list of services to respond with
-        for (let i = 1; i <= NUM_SERVICES_TAGS; i++) {
-            let item: ServiceTagResponse = {
-                id: i,
-                name: 'Test Service',
-                created_at: '2000-01-01 00:00:00',
-                updated_at: '2000-01-01 00:00:00'
-            };
-            stubServicesTags.push(item);
-        }
+        beforeEach(() => {
+            let serviceTag: ServiceTagResponse;
+            stubServiceTags = [];
 
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: stubServicesTags,
-                error: null
-            },
-            status: 200
+            for (let i = 1; i <= NUM_SERVICES_TAGS; i++) {
+                serviceTag = Object.assign(stubServiceTag, { id: i });
+                stubServiceTags.push(Object.assign({}, serviceTag));
+            }
         });
 
-        serviceService.getServiceTags().subscribe(
-            serviceTags => receivedServicesTags = serviceTags,
-            error => {
-                console.error(error);
-                fail('Failed to receive Array<Service> from MockBackend');
+        it('retrieve an array of service tags', () => {
+            let url = BASE_URL + '/api/service_tags';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: stubServiceTags,
+                    error: null
+                },
+                status: 200
             });
 
-        expect(receivedServicesTags).toEqual(jasmine.any(Array));
-        expect(receivedServicesTags.length).toBe(NUM_SERVICES_TAGS, 'received unexpected number of services');
+            serviceService.getServiceTags().subscribe(
+                serviceTags => {
+                    expect(serviceTags).toEqual(jasmine.any(Array));
+                    expect(serviceTags.length).toBe(NUM_SERVICES_TAGS, 'received unexpected number of services');
 
-        for (let index in receivedServicesTags) {
-            // index is a string, so we need to cast to number before performing arithmetic
-            let i = Number(index);
-
-            expect(receivedServicesTags[i]).toEqual(jasmine.any(ServiceTag));
-
-            // IDs are 1 indexed, not 0 indexed
-            expect(receivedServicesTags[i].id).toBe(i + 1);
-            expect(receivedServicesTags[i].name).toBe('Test Service');
-        }
-    });
-
-    it('should handle requesting a ServiceTag that is not in the database using getServiceTag()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags/999';
-        let receivedServiceTag: ServiceTag;
-
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: null,
-                error: null
-            },
-            status: 200
+                    for (let i = 0; i < serviceTags.length; i++) {
+                        // IDs are 1 indexed, not 0 indexed
+                        expect(serviceTags[i].id).toBe(i + 1);
+                        expect(serviceTags[i].name).toBe(stubServiceTags[i].name);
+                    }
+                },
+                error => fail(error)
+            );
         });
 
-        serviceService.getServiceTag(999).subscribe(
-            serviceTag => receivedServiceTag = serviceTag,
-            error => {
-                console.error(error);
-                fail('Failed to handle request ServiceTag not in database');
-            }
-        );
+        it('handles requesting an array of service tags from an empty database', () => {
+            let url = BASE_URL + '/api/service_tags';
 
-        expect(receivedServiceTag).toEqual(jasmine.any(ServiceTag));
-        expect(receivedServiceTag.id).toBe(-1);
-        expect(receivedServiceTag.name).toBe('');
-    });
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
 
-    it('should handle requesting Array<ServiceTag> on an empty database using getServiceTags()', () => {
-        let requestedUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/service_tags';
-        let receivedServiceTags: ServiceTag[];
-
-        setupConnections(mockBackend, requestedUrl, {
-            body: {
-                meta: null,
-                data: [],
-                error: null
-            },
-            status: 200
+            serviceService.getServiceTags().subscribe(
+                serviceTags => {
+                    expect(serviceTags).toEqual(jasmine.any(Array));
+                    expect(serviceTags.length).toBe(0);
+                },
+                error => fail(error)
+            );
         });
 
-        serviceService.getServiceTags().subscribe(
-            serviceTags => receivedServiceTags = serviceTags,
-            error => {
-                console.error(error);
-                fail('Failed to handle response for non-existent service');
-            }
-        );
+        it('handles server responding with null body', () => {
+            let url = BASE_URL + '/api/service_tags';
 
-        expect(receivedServiceTags).toEqual(jasmine.any(Array));
-        expect(receivedServiceTags.length).toBe(0);
-    });
+            setupConnections(mockBackend, url, RequestMethod.Get, NULL_RESPONSE);
+
+            serviceService.getServiceTags().subscribe(
+                serviceTags => {
+                    expect(serviceTags).toEqual(jasmine.any(Array));
+                    expect(serviceTags.length).toBe(0);
+                },
+                error => fail(error)
+            );
+        });
+
+        it('handles server responding with empty body', () => {
+            let url = BASE_URL + '/api/service_tags';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, EMPTY_RESPONSE);
+
+            serviceService.getServiceTags().subscribe(
+                serviceTags => {
+                    expect(serviceTags).toEqual(jasmine.any(Array));
+                    expect(serviceTags.length).toBe(0, 'event.serviceTags.length');
+                },
+                error => fail(error)
+            );
+        });
+    }); // end getServiceTags()
 });
