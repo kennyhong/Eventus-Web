@@ -21,7 +21,7 @@ export class EventDetailComponent {
     constructor(private eventService: EventService, private serviceService: ServiceService) { }
 
     deleteEvent(id: number) {
-        this.eventService.deleteEvent(String(id))
+        this.eventService.deleteEvent(id)
             .subscribe(
                 success => {
                     this.reloadEvents.emit();
