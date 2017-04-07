@@ -36,7 +36,7 @@ export class EventDetailComponent {
     }
 
     deleteEvent(id: number) {
-        this.eventService.deleteEvent(String(id))
+        this.eventService.deleteEvent(id)
             .subscribe(
                 success => {
                     this.reloadEvents.emit();
