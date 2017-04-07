@@ -54,6 +54,21 @@ describe('EventService', () => {
     let stubEvent: EventResponse;
     let stubParams: EventParams;
 
+    // Helper function to setup tests with simple responeses
+    function setupConnections(backend: MockBackend, expectedUrl: string, expectedMethod: RequestMethod, options: any) {
+        backend.connections.subscribe((connection: MockConnection) => {
+            expect(connection.request.method).toBe(expectedMethod, 'Unexpected HTTP request method');
+            if (connection.request.url === expectedUrl) {
+                const responseOptions = new ResponseOptions(options);
+                const response = new Response(responseOptions);
+
+                connection.mockRespond(response);
+            } else {
+                fail('Unexpected URL');
+            }
+        });
+    }
+
     beforeEach(() => {
         stubServiceTag = {
             id: 1,
@@ -110,21 +125,6 @@ describe('EventService', () => {
         mockBackend = testbed.get(MockBackend);
         eventService = testbed.get(EventService);
     }));
-
-    // Helper function to setup tests with simple responeses
-    function setupConnections(backend: MockBackend, expectedUrl: string, expectedMethod: RequestMethod, options: any) {
-        backend.connections.subscribe((connection: MockConnection) => {
-            expect(connection.request.method).toBe(expectedMethod, 'Unexpected HTTP request method');
-            if (connection.request.url === expectedUrl) {
-                const responseOptions = new ResponseOptions(options);
-                const response = new Response(responseOptions);
-
-                connection.mockRespond(response);
-            } else {
-                fail('Unexpected URL');
-            }
-        });
-    }
 
     it('can create an instance of EventService', () => {
         expect(eventService).toBeDefined();
@@ -281,7 +281,7 @@ describe('EventService', () => {
                 error => fail(error)
             );
         });
-    });
+    }); // end createEvent()
 
     describe('getEvent(eventId: number)', () => {
         it('retrieves a single event', () => {
@@ -631,7 +631,7 @@ describe('EventService', () => {
                 error => fail(error)
             );
         });
-    }); // updateEvent()
+    }); // end updateEvent()
 
     describe('deleteEvent(eventId: number)', () => {
         it('deletes an event from the database', () => {
