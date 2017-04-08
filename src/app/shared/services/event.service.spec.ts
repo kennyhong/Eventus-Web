@@ -807,8 +807,6 @@ describe('EventService', () => {
             );
         });
 
-        it('handles trying to remove a service that isn\'t on an event');
-
         it('handles trying to remove a service from an event that doesn\'t exist', () => {
             let url = BASE_URL + '/api/events/1/services/1';
 
