@@ -43,11 +43,20 @@ export class EventDetailComponent {
         this.selectedService = service;
     }
 
-    addServiceToEvent(serviceId: number) {
-        this.eventService.addServiceToEvent(this.event.id, serviceId)
+    addService(serviceId: number) {
+        this.eventService.addService(this.event.id, serviceId)
             .subscribe(
             success => {
                 this.reloadSelectedEvent();       
+            },
+            error => this.errorMessage = <any>error);
+    }
+
+    removeService(serviceId: number) {
+        this.eventService.removeService(this.event.id, serviceId)
+            .subscribe(
+            success => {
+                this.reloadSelectedEvent();
             },
             error => this.errorMessage = <any>error);
     }
