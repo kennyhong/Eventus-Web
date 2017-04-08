@@ -16,7 +16,7 @@
             </div>
         </div>
         <div align="right">
-            <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editForm">
+            <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
                 Edit
             </button>
             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteMsg">
@@ -30,16 +30,16 @@
     <h2>Please Select an Event</h2>
 </div>
 
-<div *ngIf="event !== undefined" class="modal fade" id="editForm" tabindex="-1" role="dialog" aria-labelledby="editFormLabel" aria-hidden="true">
+<div *ngIf="event !== undefined" class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <span class="modal-title" id="editFormLabel"><b>Edit Event</b></span>
+                <span class="modal-title" id="editModalLabel"><b>Edit Event</b></span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form (ngSubmit)="editEvent()" #eventForm="ngForm">
+            <form (ngSubmit)="updateEvent()" #editForm="ngForm">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="name">Event Name</label>
@@ -72,10 +72,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <input type="submit" class="btn btn-primary"
-                           value="Save Event"
-                           [disabled]="!eventForm.form.valid"
-                           data-dismiss="modal">
+                    <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid" (click)="updateEvent()" data-dismiss="modal">Save Event</button>
                 </div>
             </form>
         </div>

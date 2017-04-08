@@ -45,14 +45,15 @@ export class EventDetailComponent {
                 error => this.errorMessage = <any>error);
     }
 
-    editEvent() {
+    updateEvent() {
         if (!this.validateInput()) {
             return;
         }
         this.parseForm();
-        this.eventService.editEvent(this.eventParams, this.event.id)
+        this.eventService.updateEvent(this.event.id, this.eventParams)
             .subscribe(
                 event => {
+                    this.reloadEvents.emit();
                     this.event = event;
                 },
                 error => console.error(error));
