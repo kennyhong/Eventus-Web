@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Event } from '../../shared/models/event.model';
+import { Event, EventParams } from '../../shared/models/event.model';
 import { EventService } from '../../shared/services/event.service';
 import { Service } from '../../shared/models/service.model';
 import { ServiceService } from '../../shared/services/service.service';
@@ -18,6 +18,7 @@ export class EventDetailComponent {
     emptyEvent: Event;
     services: Service[] = [];
     selectedService: Service;
+    eventParams: EventParams;
 
     constructor(private eventService: EventService, private serviceService: ServiceService) { }
 
@@ -46,8 +47,19 @@ export class EventDetailComponent {
         this.eventService.addServiceToEvent(this.event.id, serviceId)
             .subscribe(
             success => {
-                this.reloadEvents.emit();
+                this.reloadSelectedEvent();       
             },
             error => this.errorMessage = <any>error);
+    }
+
+    reloadSelectedEvent() {        
+        this.eventParams = { name: this.event.name, description: this.event.description, date: this.event.date };
+        this.eventService.updateEvent(this.event.id, this.eventParams)
+            .subscribe(
+            event => {
+                this.reloadEvents.emit();
+                this.event = event;
+            },
+            error => console.error(error));
     }
 }
