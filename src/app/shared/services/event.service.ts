@@ -45,14 +45,28 @@ export class EventService {
             .catch(this.handleError);
     }
 
-    deleteEvent(id: number): Observable<any> {
-        return this.http.delete(this.eventsUrl + '/' + id, this.options)
+    deleteEvent(eventId: number): Observable<any> {
+        return this.http.delete(this.eventsUrl + '/' + eventId, this.options)
             .map(this.extractSuccess)
             .catch(this.handleError);
     }
 
-    addServiceToEvent(eventId: number, serviceId: number): Observable<boolean> {
+    addService(eventId: number, serviceId: number): Observable<boolean> {
         return this.http.post(this.eventsUrl + '/' + eventId + '/services/' + serviceId, {}, this.options)
+            .map((res: Response) => {
+                let body = res.json();
+
+                if (body && body.data && !body.error) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            .catch(this.handleError);
+    }
+
+    removeService(eventId: number, serviceId: number): Observable<boolean> {
+        return this.http.delete(this.eventsUrl + '/' + eventId + '/services/' + serviceId, this.options)
             .map((res: Response) => {
                 let body = res.json();
 
