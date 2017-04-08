@@ -18,24 +18,18 @@ export class ServiceService {
 
     constructor(private http: Http) {}
 
-    // --------
-    // Services
-    // --------
-    getServices(): Observable<Service[]> {
-        return this.http.get(this.servicesUrl)
-            .map(this.extractServices)
-            .catch(this.handleError);
-    }
-
     getService(serviceId: number): Observable<Service> {
         return this.http.get(this.servicesUrl + '/' + serviceId)
             .map(this.extractService)
             .catch(this.handleError);
     }
 
-    // ------------
-    // Service Tags
-    // ------------
+    getServices(): Observable<Service[]> {
+        return this.http.get(this.servicesUrl)
+            .map(this.extractServices)
+            .catch(this.handleError);
+    }
+
     getServiceTag(serviceTagId: number): Observable<ServiceTag> {
         return this.http.get(this.serviceTagsUrl + '/' + serviceTagId)
             .map(this.extractServiceTag)
@@ -50,12 +44,18 @@ export class ServiceService {
 
     private extractService(res: Response): Service {
         let service: Service;
-        let data = res.json().data;
+        let body = res.json();
 
-        if (data === null) {
-            service = new Service(-1, '', 0, []);
+        if (body && body.data && !body.error) {
+            let data = body.data;
+            let serviceTags: ServiceTag[] = [];
+
+            for (let serviceTag of data.service_tags) {
+                serviceTags.push(new ServiceTag(serviceTag.id, serviceTag.name));
+            }
+            service = new Service(data.id, data.name, data.cost, serviceTags);
         } else {
-            service = new Service(data.id, data.name, data.cost, data.service_tags);
+            service = new Service(-1, '', 0, []);
         }
 
         return service;
@@ -63,11 +63,19 @@ export class ServiceService {
 
     private extractServices(res: Response): Service[] {
         let services: Service[] = [];
-        let data = res.json().data;
+        let body = res.json();
 
-        if (data !== null) {
-            for (let item of data) {
-                services.push(new Service(item.id, item.name, item.cost, item.service_tags));
+        if (body && body.data && !body.error) {
+            let data = body.data;
+
+            for (let service of data) {
+                let serviceTags: ServiceTag[] = [];
+
+                for (let serviceTag of service.service_tags) {
+                    // console.log(serviceTag);
+                    serviceTags.push(new ServiceTag(serviceTag.id, serviceTag.name));
+                }
+                services.push(new Service(service.id, service.name, service.cost, serviceTags));
             }
         }
 
@@ -76,12 +84,13 @@ export class ServiceService {
 
     private extractServiceTag(res: Response): ServiceTag {
         let serviceTag: ServiceTag;
-        let data = res.json().data;
+        let body = res.json();
 
-        if (data === null) {
-            serviceTag = new ServiceTag(-1, '');
-        } else {
+        if (body && body.data && !body.error) {
+            let data = body.data;
             serviceTag = new ServiceTag(data.id, data.name);
+        } else {
+            serviceTag = new ServiceTag(-1, '');
         }
 
         return serviceTag;
@@ -89,9 +98,11 @@ export class ServiceService {
 
     private extractServiceTags(res: Response): ServiceTag[] {
         let serviceTags: ServiceTag[] = [];
-        let data = res.json().data;
+        let body = res.json();
 
-        if (data !== null) {
+        if (body && body.data && !body.error) {
+            let data = body.data;
+
             for (let item of data) {
                 serviceTags.push(new ServiceTag(item.id, item.name));
             }
