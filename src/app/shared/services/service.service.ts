@@ -5,7 +5,15 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
-import { Service, ServiceTag} from '../models/service.model';
+import { Service, ServiceTag } from '../models/service.model';
+
+export interface ServiceQuery {
+    ids?: number[];
+    except_ids?: number[];
+    tag_ids?: number[];
+    order?: string;
+    order_by?: string;
+}
 
 @Injectable()
 export class ServiceService {
@@ -24,7 +32,7 @@ export class ServiceService {
             .catch(this.handleError);
     }
 
-    getServices(): Observable<Service[]> {
+    getServices(query?: ServiceQuery): Observable<Service[]> {
         return this.http.get(this.servicesUrl)
             .map(this.extractServices)
             .catch(this.handleError);
@@ -36,7 +44,7 @@ export class ServiceService {
             .catch(this.handleError);
     }
 
-    getServiceTags(): Observable<ServiceTag[]> {
+    getServiceTags(query?: ServiceQuery): Observable<ServiceTag[]> {
         return this.http.get(this.serviceTagsUrl)
             .map(this.extractServiceTags)
             .catch(this.handleError);
