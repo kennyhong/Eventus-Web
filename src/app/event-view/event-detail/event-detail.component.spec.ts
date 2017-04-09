@@ -8,6 +8,7 @@ import 'rxjs/add/observable/of';
 import { Event } from '../../shared/models/event.model';
 import { Service, ServiceTag } from '../../shared/models/service.model';
 import { EventService } from '../../shared/services/event.service';
+import { ServiceService } from '../../shared/services/service.service';
 import { EventDetailComponent } from './event-detail.component';
 
 let stubEvents: Event[];
@@ -63,7 +64,7 @@ describe('EventDetailComponent', () => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
             declarations: [EventDetailComponent],
-            providers: [{ provide: EventService, useClass: StubEventService }]
+            providers: [{ provide: EventService, useClass: StubEventService }, { provide: ServiceService}]
         }).compileComponents();
     }));
 

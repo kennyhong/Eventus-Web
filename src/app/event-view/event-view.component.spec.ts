@@ -1,4 +1,5 @@
 import { HttpModule } from '@angular/http';
+import { FormsModule }   from '@angular/forms';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
@@ -37,9 +38,10 @@ describe('EventViewComponent', () => {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [ {provide: EventService, useClass: StubEventService} ],
+            providers: [{ provide: EventService, useClass: StubEventService }, { provide: ServiceService }],
             imports: [
-                HttpModule
+                HttpModule,
+                FormsModule
             ]
         }).compileComponents();
     }));
