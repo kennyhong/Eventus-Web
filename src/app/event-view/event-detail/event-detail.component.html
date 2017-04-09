@@ -184,13 +184,23 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <h1>
-                    Sub Total: {{event.invoice.subTotal}}<br><br>
-                    Tax: {{event.invoice.tax}}<br><br>
-                    Grand Total: {{event.invoice.grandTotal}}
-                </h1>
-            </div>
+            <font size="30">
+                <div class="modal-body">
+                    <p style="text-align:left;">
+                        Sub Total:
+                        <span style="float:right;">{{event.invoice.subTotal}}</span>
+                    </p>
+                    <p style="text-align:left;">
+                        Tax:
+                        <span style="float:right;">{{event.invoice.tax}}</span>
+                    </p>
+                    <hr style="background:#000000; border:0; height:4px" />
+                    <p style="text-align:left;">
+                        Grand Total:
+                        <span style="float:right;">{{event.invoice.grandTotal}}</span>
+                    </p>
+                </div>
+            </font>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
