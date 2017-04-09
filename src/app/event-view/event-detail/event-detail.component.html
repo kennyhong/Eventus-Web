@@ -20,6 +20,9 @@
             <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
                 Edit
             </button>
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#invoiceModal">
+                View Invoice
+            </button>
             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteMsg">
                 Delete
             </button>
@@ -171,3 +174,27 @@
         </div>
     </div>
 </div>
+
+<div *ngIf="event !== undefined && event.invoice !== undefined" class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="invoiceModalLabel"><b>Event Invoice</b></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h1>
+                    Sub Total: {{event.invoice.subTotal}}<br><br>
+                    Tax: {{event.invoice.tax}}<br><br>
+                    Grand Total: {{event.invoice.grandTotal}}
+                </h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
