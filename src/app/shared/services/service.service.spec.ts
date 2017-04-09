@@ -440,7 +440,7 @@ describe('ServiceService', () => {
             });
 
             let query: ServiceQuery = {
-                order_by: 'id'
+                order_by: 'name'
             };
 
             serviceService.getServices(query);

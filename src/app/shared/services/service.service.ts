@@ -33,7 +33,12 @@ export class ServiceService {
     }
 
     getServices(query?: ServiceQuery): Observable<Service[]> {
-        return this.http.get(this.servicesUrl)
+        let queryString = '';
+        if (query) {
+            queryString = this.generateQueryString(query);
+        }
+
+        return this.http.get(this.servicesUrl + queryString)
             .map(this.extractServices)
             .catch(this.handleError);
     }
@@ -45,7 +50,12 @@ export class ServiceService {
     }
 
     getServiceTags(query?: ServiceQuery): Observable<ServiceTag[]> {
-        return this.http.get(this.serviceTagsUrl)
+        let queryString = '';
+        if (query) {
+            queryString = this.generateQueryString(query);
+        }
+
+        return this.http.get(this.serviceTagsUrl + queryString)
             .map(this.extractServiceTags)
             .catch(this.handleError);
     }
@@ -133,5 +143,36 @@ export class ServiceService {
         console.error(errMsg);
 
         return Observable.throw(errMsg);
+    }
+
+    private generateQueryString(query: ServiceQuery): string {
+        let subQueries = [];
+
+        if (query.ids) {
+            subQueries.push('filter-ids=' + query.ids.join());
+        }
+
+        if (query.except_ids) {
+            subQueries.push('filter-except-ids=' + query.except_ids.join());
+        }
+
+        if (query.tag_ids) {
+            subQueries.push('filter-tag-ids=' + query.tag_ids.join());
+        }
+
+        if (query.order) {
+            subQueries.push('order=' + query.order);
+        }
+
+        if (query.order_by) {
+            subQueries.push('order-by=' + query.order_by);
+        }
+
+        if (subQueries.length > 0) {
+            return '?' + subQueries.join('&');
+        } else {
+            return '';
+        }
+
     }
 }
