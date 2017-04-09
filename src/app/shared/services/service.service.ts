@@ -146,17 +146,17 @@ export class ServiceService {
     }
 
     private generateQueryString(query: ServiceQuery): string {
-        let subQueries = [];
+        let subQueries: string[] = [];
 
-        if (query.ids) {
+        if (query.ids && query.ids.length > 0) {
             subQueries.push('filter-ids=' + query.ids.join());
         }
 
-        if (query.except_ids) {
+        if (query.except_ids && query.except_ids.length > 0) {
             subQueries.push('filter-except-ids=' + query.except_ids.join());
         }
 
-        if (query.tag_ids) {
+        if (query.tag_ids && query.tag_ids.length > 0) {
             subQueries.push('filter-tag-ids=' + query.tag_ids.join());
         }
 

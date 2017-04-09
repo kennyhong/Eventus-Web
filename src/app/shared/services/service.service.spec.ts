@@ -294,6 +294,25 @@ describe('ServiceService', () => {
             serviceService.getServices(query);
         });
 
+        it('constructs url for filtering by ID when no IDs are supplied', () => {
+            let url = BASE_URL + '/api/services';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [], // it doesn't matter what the response contains
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                ids: []
+            };
+
+            serviceService.getServices(query);
+        });
+
         it('constructs url for filtering by all except ID', () => {
             let url = BASE_URL + '/api/services?filter-except-ids=1';
 
@@ -332,6 +351,25 @@ describe('ServiceService', () => {
             serviceService.getServices(query);
         });
 
+        it('constructs url for filtering by except ID when no IDs are supplied', () => {
+            let url = BASE_URL + '/api/services';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [], // it doesn't matter what the response contains
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                except_ids: []
+            };
+
+            serviceService.getServices(query);
+        });
+
         it('constructs url for filtering by service tag ID', () => {
             let url = BASE_URL + '/api/services?filter-tag-ids=1';
 
@@ -365,6 +403,25 @@ describe('ServiceService', () => {
 
             let query: ServiceQuery = {
                 tag_ids: [1, 2, 3]
+            };
+
+            serviceService.getServices(query);
+        });
+
+        it('constructs url for filtering by service tag ID when no IDs are supplied', () => {
+            let url = BASE_URL + '/api/services';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [], // it doesn't matter what the response contains
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                tag_ids: []
             };
 
             serviceService.getServices(query);
@@ -691,6 +748,25 @@ describe('ServiceService', () => {
             serviceService.getServiceTags(query);
         });
 
+        it('constructs url for filtering by multiple IDs when no IDs are supplied', () => {
+            let url = BASE_URL + '/api/service_tags';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [], // it doesn't matter what the response contains
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                ids: []
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
         it('constructs url for filtering by all except ID', () => {
             let url = BASE_URL + '/api/service_tags?filter-except-ids=1';
 
@@ -724,6 +800,25 @@ describe('ServiceService', () => {
 
             let query: ServiceQuery = {
                 except_ids: [1, 2, 3]
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for filtering by all except multiple IDs when no IDs are supplied', () => {
+            let url = BASE_URL + '/api/service_tags';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                except_ids: []
             };
 
             serviceService.getServiceTags(query);
