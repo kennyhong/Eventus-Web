@@ -7,15 +7,16 @@
         <div *ngFor="let service of event.services" class="well well-sm">
             <h4>{{service.name}}</h4>
             <p>This service costs &#36;{{service.cost}}</p>
-            <div>
-                <h6>Tags</h6>
-                <button *ngFor="let serviceTag of service.serviceTags" type="button" class="btn btn-default btn-sm">
-                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                    {{serviceTag.name}}
+            <div align="right">
+                <button type="button" class="btn btn-danger btn-xs" (click)="selectService(service)" data-toggle="modal" data-target="#removeServiceMsg">
+                    Remove Service
                 </button>
             </div>
         </div>
         <div align="right">
+            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
+                View Services
+            </button>
             <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
                 Edit
             </button>
@@ -30,15 +31,86 @@
     <h2>Please Select an Event</h2>
 </div>
 
-<div *ngIf="event !== undefined" class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+<div *ngIf="event !== undefined" class="modal fade" id="serviceList" tabindex="-1" role="dialog" aria-labelledby="serviceListLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <span class="modal-title" id="editModalLabel"><b>Edit Event</b></span>
+                <span class="modal-title" id="serviceListLabel"><b>Service List</b></span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    <div *ngFor="let service of services" class="list-group-item service">
+                        <h3 class="list-group-item-heading">{{service.name}}</h3>
+                        <div class="list-group-item-text">${{service.cost}}</div>
+                        <div>
+                            <span *ngFor="let serviceTag of service.serviceTags" class="label label-primary" style="margin-right:5px;">
+                                <span class="glyphicon glyphicon-tag"></span>&nbsp;{{serviceTag.name}}
+                            </span>
+                        </div>
+                        <div align="right">
+                            <button type="button" class="btn btn-primary btn-xs" (click)="addService(service.id)">
+                                Add Service
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="event !== undefined && selectedService !== undefined" class="modal fade" id="removeServiceMsg" tabindex="-1" role="dialog" aria-labelledby="removeServiceMsgLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="removeServiceMsgLabel"><b>Remove Service</b></span>
+                <div class="modal-body">
+                    <h1>Are you sure you want to remove this service from "{{event.name}}"?</h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" (click)="removeService(selectedService.id)" data-dismiss="modal">Remove Service</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="event !== undefined && selectedService !== undefined" class="modal fade" id="addServiceMsg" tabindex="-1" role="dialog" aria-labelledby="addServiceMsgLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="addServiceMsgLabel"><b>Add Service</b></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h1>Are you sure you want to add this service to "{{event.name}}"?</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="addService(selectedService.id)" data-dismiss="modal">Add Service</button>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="event !== undefined" class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <span class="modal-title" id="editModalLabel"><b>Edit Event</b></span>
             <form #editForm="ngForm">
                 <div class="modal-body">
                     <div class="form-group">
@@ -77,6 +149,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 
 <div *ngIf="event !== undefined" class="modal fade" id="deleteMsg" tabindex="-1" role="dialog" aria-labelledby="deleteMsgLabel" aria-hidden="true">

@@ -1,4 +1,5 @@
 import { EventService } from '../shared/services/event.service';
+import { ServiceService } from '../shared/services/service.service';
 import { EventViewComponent } from './event-view.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
@@ -45,7 +46,7 @@ describe('EventViewComponent', () => {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [ {provide: EventService, useClass: StubEventService} ],
+            providers: [{ provide: EventService, useClass: StubEventService }, { provide: ServiceService }],
             imports: [
                 HttpModule,
                 FormsModule
