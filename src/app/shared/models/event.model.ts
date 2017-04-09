@@ -32,9 +32,11 @@ export class Event {
         this.services = services;
 
         if (invoice) {
-            this.invoice.subTotal = invoice.subTotal;
-            this.invoice.tax = invoice.tax;
-            this.invoice.grandTotal = invoice.grandTotal;
+            this.invoice = {
+                subTotal: invoice.subTotal,
+                tax: invoice.tax,
+                grandTotal: invoice.grandTotal
+            }
         }
     }
 }
