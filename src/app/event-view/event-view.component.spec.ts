@@ -8,6 +8,7 @@ import { } from '@types/jasmine';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EventService } from '../shared/services/event.service';
+import { ServiceService } from '../shared/services/service.service';
 import { EventViewComponent } from './event-view.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
@@ -22,6 +23,8 @@ class StubEventService {
         return Observable.of(stubEvents);
     }
 }
+
+class StubServiceService {}
 
 describe('EventViewComponent', () => {
     let stubServiceTag: ServiceTag;
@@ -38,7 +41,10 @@ describe('EventViewComponent', () => {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [{ provide: EventService, useClass: StubEventService }, { provide: ServiceService }],
+            providers: [
+                { provide: EventService, useClass: StubEventService },
+                { provide: ServiceService, useClass:  StubServiceService }
+            ],
             imports: [
                 HttpModule,
                 FormsModule
