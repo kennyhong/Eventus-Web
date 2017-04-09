@@ -43,6 +43,4 @@ export class EventViewComponent implements OnInit {
             this.selectedEvent = event;
         }
     }
-
-
 }
