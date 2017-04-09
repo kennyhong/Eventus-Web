@@ -14,8 +14,14 @@ import {
 } from '@angular/http/testing';
 
 import { EventService } from './event.service';
-import { Event, EventParams } from '../models/event.model';
+import { Event, EventParams, Invoice } from '../models/event.model';
 import { Service, ServiceTag } from '../models/service.model';
+
+interface InvoiceResponse {
+    sub_total: number;
+    tax: number;
+    grand_total: number;
+}
 
 interface ServiceTagResponse {
     id: number;
@@ -31,6 +37,7 @@ interface ServiceResponse {
     created_at: string;
     updated_at: string;
     service_tags: ServiceTagResponse[];
+    invoice?: InvoiceResponse;
 }
 
 interface EventResponse {
@@ -51,7 +58,7 @@ const NULL_RESPONSE: any = {
 const EMPTY_RESPONSE: any = {
     body: {},
     status: 200
-}
+};
 
 describe('EventService', () => {
     const DATE_PATTERN = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
@@ -62,6 +69,7 @@ describe('EventService', () => {
     let stubServiceTag: ServiceTagResponse;
     let stubService: ServiceResponse;
     let stubEvent: EventResponse;
+    let stubInvoice: InvoiceResponse;
     let stubParams: EventParams;
 
     // Helper function to setup tests with simple responeses
@@ -104,6 +112,12 @@ describe('EventService', () => {
             created_at: '2000-01-01 00:00:00',
             updated_at: '2000-01-01 00:00:00',
             services: []
+        };
+
+        stubInvoice = {
+            sub_total: 10.00,
+            tax: 1.30,
+            grand_total: 11.30
         };
 
         stubParams = {
@@ -321,6 +335,56 @@ describe('EventService', () => {
                     expect(event.date).toBe(stubEvent.date);
                     expect(event.date).toMatch(DATE_PATTERN);
                     expect(event.services.length).toBe(1, 'event.services.length');
+
+                    expect(event.invoice).toBeUndefined();
+
+                    for (let service of event.services) {
+                        expect(service).toEqual(jasmine.any(Service));
+                        expect(service.id).toBe(stubService.id);
+                        expect(service.name).toBe(stubService.name);
+                        expect(service.cost).toBe(stubService.cost, 'service.cost');
+                        expect(service.serviceTags.length).toBe(1, 'service.serviceTags.length');
+
+                        for (let serviceTag of service.serviceTags) {
+                            expect(serviceTag).toEqual(jasmine.any(ServiceTag));
+                            expect(serviceTag.id).toBe(stubServiceTag.id, 'serviceTag.id');
+                            expect(serviceTag.name).toBe(stubServiceTag.name);
+                        }
+                    }
+                },
+                error => fail(error)
+            );
+        });
+
+        it('retrieves a single event with an invoice', () => {
+            let url = BASE_URL + '/api/events/1/invoice';
+
+            stubEvent = Object.assign(stubEvent, stubInvoice);
+            stubEvent = Object.assign(stubEvent, { services: [stubService] });
+
+            setupConnections(mockBackend, url, METHOD, {
+                body: {
+                    meta: null,
+                    data: stubEvent,
+                    error: null
+                },
+                status: 200
+            });
+
+            eventService.getEventWithInvoice(1).subscribe(
+                event => {
+                    expect(event).toEqual(jasmine.any(Event));
+                    expect(event.id).toBe(stubEvent.id, 'event.id');
+                    expect(event.name).toBe(stubEvent.name);
+                    expect(event.description).toBe(stubEvent.description);
+                    expect(event.date).toBe(stubEvent.date);
+                    expect(event.date).toMatch(DATE_PATTERN);
+                    expect(event.services.length).toBe(1, 'event.services.length');
+
+                    expect(event.invoice).toBeDefined();
+                    expect(event.invoice.subTotal).toBe(10.00, 'event.invoice.subTotal');
+                    expect(event.invoice.tax).toBe(1.30, 'event.invoice.tax');
+                    expect(event.invoice.grandTotal).toBe(11.30, 'event.invoice.grandTotal');
 
                     for (let service of event.services) {
                         expect(service).toEqual(jasmine.any(Service));

@@ -6,7 +6,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
-import { Event, EventParams } from '../models/event.model';
+import { Event, EventParams, Invoice } from '../models/event.model';
 import { Service, ServiceTag } from '../models/service.model';
 
 @Injectable()
@@ -31,6 +31,11 @@ export class EventService {
             .catch(this.handleError);
     }
 
+    getEventWithInvoice(id: number): Observable<Event> {
+        return this.http.get(this.eventsUrl + '/' + id + '/invoice')
+            .map(this.extractEvent)
+            .catch(this.handleError);
+    }
 
     getEvents(): Observable<Event[]> {
         return this.http.get(this.eventsUrl)
@@ -82,6 +87,7 @@ export class EventService {
 
     private extractEvent(res: Response): Event {
         let event: Event;
+        let invoice: Invoice;
         let body = res.json();
 
         if (body && body.data && !body.error) {
@@ -96,7 +102,16 @@ export class EventService {
                 }
                 services.push(new Service(service.id, service.name, service.cost, serviceTags));
             }
-            event = new Event(data.id, data.name, data.description, data.date, services);
+
+            if (data.sub_total && data.tax && data.grand_total) {
+                invoice = {
+                    subTotal: data.sub_total,
+                    tax: data.tax,
+                    grandTotal: data.grand_total
+                };
+            }
+
+            event = new Event(data.id, data.name, data.description, data.date, services, invoice);
         } else {
             event = new Event(-1, '', '', '', []);
         }
