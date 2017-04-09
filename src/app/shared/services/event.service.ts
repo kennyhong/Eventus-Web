@@ -31,6 +31,7 @@ export class EventService {
             .catch(this.handleError);
     }
 
+
     getEvents(): Observable<Event[]> {
         return this.http.get(this.eventsUrl)
             .map(this.extractEvents)

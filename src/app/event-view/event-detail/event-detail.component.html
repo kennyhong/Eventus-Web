@@ -16,6 +16,9 @@
             </div>
         </div>
         <div align="right">
+            <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
+                Edit
+            </button>
             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteMsg">
                 Delete
             </button>
@@ -25,6 +28,55 @@
 
 <div *ngIf="event === undefined">
     <h2>Please Select an Event</h2>
+</div>
+
+<div *ngIf="event !== undefined" class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="editModalLabel"><b>Edit Event</b></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form #editForm="ngForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Event Name</label>
+                        <input type="text" class="form-control" id="name"
+                               required
+                               name="name" [(ngModel)]="formData.name">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description"
+                                  required
+                                  name="description" [(ngModel)]="formData.description"
+                                  rows="4" cols="50"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Start Date</label>
+                        <input type="text" class="form-control" id="date"
+                               required
+                               pattern="^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$"
+                               name="date" [(ngModel)]="formData.date">
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Start Time</label>
+                        <input type="text" class="form-control" id="time"
+                               required
+                               pattern="^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"
+                               name="time" [(ngModel)]="formData.time"
+                               placeholder="HH:MM:SS">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid" (click)="updateEvent()" data-dismiss="modal">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div *ngIf="event !== undefined" class="modal fade" id="deleteMsg" tabindex="-1" role="dialog" aria-labelledby="deleteMsgLabel" aria-hidden="true">
