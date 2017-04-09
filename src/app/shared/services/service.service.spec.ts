@@ -653,6 +653,179 @@ describe('ServiceService', () => {
             );
         });
 
+        it('constructs url for filtering by a single ID', () => {
+            let url = BASE_URL + '/api/service_tags?filter-ids=1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [], // it doesn't matter what the response contains
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                ids: [1]
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for filtering by multiple IDs', () => {
+            let url = BASE_URL + '/api/service_tags?filter-ids=1,2,3';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [], // it doesn't matter what the response contains
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                ids: [1, 2, 3]
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for filtering by all except ID', () => {
+            let url = BASE_URL + '/api/service_tags?filter-except-ids=1';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                except_ids: [1]
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for filtering by all except multiple IDs', () => {
+            let url = BASE_URL + '/api/service_tags?filter-except-ids=1,2,3';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                except_ids: [1, 2, 3]
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for ordering ascending properly', () => {
+            let url = BASE_URL + '/api/service_tags?order=ASC';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                order: 'ASC'
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for ordering descending properly', () => {
+            let url = BASE_URL + '/api/service_tags?order=DESC';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                order: 'DESC'
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for ordering by id properly', () => {
+            let url = BASE_URL + '/api/service_tags?order-by=id';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                order_by: 'id'
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for ordering by name properly', () => {
+            let url = BASE_URL + '/api/service_tags?order-by=name';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                order_by: 'name'
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
+        it('constructs url for filtering and ordering', () => {
+            let url = BASE_URL + '/api/service_tags?filter-ids=1,2,3&order=DESC&order-by=id';
+
+            setupConnections(mockBackend, url, RequestMethod.Get, {
+                body: {
+                    meta: null,
+                    data: [],
+                    error: null
+                },
+                status: 200
+            });
+
+            let query: ServiceQuery = {
+                ids: [1, 2, 3],
+                order: 'DESC',
+                order_by: 'id'
+            };
+
+            serviceService.getServiceTags(query);
+        });
+
         it('handles requesting an array of service tags from an empty database', () => {
             let url = BASE_URL + '/api/service_tags';
 
