@@ -8,13 +8,13 @@
             <h4>{{service.name}}</h4>
             <p>This service costs &#36;{{service.cost}}</p>
             <div align="right">
-                <button type="button" class="btn btn-default btn-xs" (click)="selectService(service)" data-toggle="modal" data-target="#removeServiceMsg">
+                <button type="button" class="btn btn-danger btn-xs" (click)="selectService(service)" data-toggle="modal" data-target="#removeServiceMsg">
                     Remove Service
                 </button>
             </div>
         </div>
         <div align="right">
-            <button type="button" class="btn btn-default btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
+            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
                 View Services
             </button>
             <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
