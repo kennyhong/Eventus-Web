@@ -160,11 +160,11 @@ export class ServiceService {
             subQueries.push('filter-tag-ids=' + query.tag_ids.join());
         }
 
-        if (query.order) {
+        if (query.order && query.order !== '') {
             subQueries.push('order=' + query.order);
         }
 
-        if (query.order_by) {
+        if (query.order_by && query.order_by !== '') {
             subQueries.push('order-by=' + query.order_by);
         }
 

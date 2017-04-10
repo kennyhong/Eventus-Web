@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Event, EventParams } from '../../shared/models/event.model';
 import { EventService } from '../../shared/services/event.service';
-import { Service } from '../../shared/models/service.model';
+import { Service, ServiceTag } from '../../shared/models/service.model';
 import { ServiceService, ServiceQuery } from '../../shared/services/service.service';
 import * as moment from 'moment';
 
@@ -11,6 +11,11 @@ export interface EventEditForm {
     description: string;
     date: string;
     time: string;
+}
+
+interface SortForm {
+    orderBy: any;
+    order: any;
 }
 
 @Component({
@@ -25,8 +30,11 @@ export class EventDetailComponent {
     errorMessage: {};
     emptyEvent: Event;
     services: Service[] = [];
+    serviceTags: ServiceTag[] = [];
     selectedService: Service;
     formData: EventEditForm;
+    sortForm: SortForm;
+    selectedTags: number[];
     eventParams: EventParams;
 
     constructor(private eventService: EventService, private serviceService: ServiceService) {
@@ -36,6 +44,11 @@ export class EventDetailComponent {
             date: '',
             time: ''
         };
+        this.sortForm = {
+            orderBy: 'name',
+            order: 'ASC'
+        };
+        this.selectedTags = [];
         this.eventParams = { name: '', description: '', date: '' };
     }
 
@@ -53,19 +66,32 @@ export class EventDetailComponent {
     loadServices() {
         let query: ServiceQuery;
         let currServices: number[] = [];
+        console.log(this.sortForm);
+        console.log(this.selectedTags);
 
         for (let service of this.event.services) {
             currServices.push(service.id);
         }
 
         query = {
-            except_ids: currServices
+            except_ids: currServices,
+            tag_ids: this.selectedTags,
+            order_by: this.sortForm.orderBy,
+            order: this.sortForm.order
         };
 
         this.serviceService.getServices(query)
             .subscribe(
                 services => this.services = services,
                 error => this.errorMessage = <any>error
+            );
+    }
+
+    loadServiceTags() {
+        this.serviceService.getServiceTags()
+            .subscribe(
+                serviceTags => this.serviceTags = serviceTags,
+                error => this.errorMessage = error
             );
     }
 
