@@ -63,11 +63,17 @@ export class EventDetailComponent {
             );
     }
 
+    resetServiceFilters() {
+        this.sortForm = {
+            orderBy: 'name',
+            order: 'ASC'
+        };
+        this.selectedTags = [];
+    }
+
     loadServices() {
         let query: ServiceQuery;
         let currServices: number[] = [];
-        console.log(this.sortForm);
-        console.log(this.selectedTags);
 
         for (let service of this.event.services) {
             currServices.push(service.id);
