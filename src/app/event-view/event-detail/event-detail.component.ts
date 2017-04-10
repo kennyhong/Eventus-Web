@@ -79,8 +79,7 @@ export class EventDetailComponent {
     }
 
     reloadSelectedEvent() {        
-        this.eventParams = { name: this.event.name, description: this.event.description, date: this.event.date };
-        this.eventService.updateEvent(this.event.id, this.eventParams)
+        this.eventService.getEventWithInvoice(this.event.id)
             .subscribe(
             event => {
                 this.reloadEvents.emit();

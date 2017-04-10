@@ -31,6 +31,16 @@ export class EventViewComponent implements OnInit {
     }
 
     onSelected(event: Event) {
-        this.selectedEvent = event;
+        if (event !== undefined) {
+            this.eventService.getEventWithInvoice(event.id)
+                .subscribe(
+                event => {
+                    this.selectedEvent = event;
+                },
+                error => this.errorMessage = <any>error);
+        }
+        else {
+            this.selectedEvent = event;
+        }
     }
 }
