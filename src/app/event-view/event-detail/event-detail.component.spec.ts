@@ -6,40 +6,10 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
 import { Event } from '../../shared/models/event.model';
+import { Service, ServiceTag } from '../../shared/models/service.model';
 import { EventService } from '../../shared/services/event.service';
+import { ServiceService } from '../../shared/services/service.service';
 import { EventDetailComponent } from './event-detail.component';
-
-let stubEvent = {
-    id: 1,
-    name: 'Test Event',
-    description: 'Test Description',
-    date: '1000-01-01 00:00:00',
-    services: [{
-        id: 1,
-        name: 'Test Service',
-        cost: 100,
-        serviceTags: [{
-            id: 1,
-            name: 'Test Service Tag'
-        }]
-    }]
-};
-
-let stubEvent2 = {
-    id: 2,
-    name: 'Another Test Event',
-    description: 'Another Test Description',
-    date: '2000-02-02 00:00:00',
-    services: [{
-        id: 1,
-        name: 'Another Test Service',
-        cost: 100,
-        serviceTags: [{
-            id: 1,
-            name: 'Another Test Service Tag'
-        }]
-    }]
-};
 
 let stubEvents: Event[];
 
@@ -82,6 +52,11 @@ class StubEventService {
 }
 
 describe('EventDetailComponent', () => {
+    let stubServiceTag: ServiceTag;
+    let stubService: Service;
+    let stubEvent: Event;
+    let stubEvent2: Event;
+
     let comp: EventDetailComponent;
     let fixture: ComponentFixture<EventDetailComponent>;
 
@@ -89,11 +64,16 @@ describe('EventDetailComponent', () => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
             declarations: [EventDetailComponent],
-            providers: [{ provide: EventService, useClass: StubEventService }]
+            providers: [{ provide: EventService, useClass: StubEventService }, { provide: ServiceService}]
         }).compileComponents();
     }));
 
     beforeEach(() => {
+        stubServiceTag = new ServiceTag(1, 'Test Service Tag');
+        stubService = new Service(1, 'Test Service', 10, [stubServiceTag]);
+        stubEvent = new Event(1, 'Test Event', 'Test Description', '1000-01-01 00:00:00', [stubService]);
+        stubEvent2 = new Event(2, 'Test Event', 'Test Description', '1000-01-01 00:00:00', [stubService]);
+
         stubEvents = [stubEvent, stubEvent2];
         fixture = TestBed.createComponent(EventDetailComponent);
         comp = fixture.componentInstance;

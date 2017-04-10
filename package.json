@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc -p src/",
     "build:watch": "tsc -p src/ -w",
+    "clean": "git clean -xf -e node_modules/",
     "serve": "lite-server -c=bs-config.json",
     "prestart": "npm run build",
     "preprotractor": "webdriver-manager update",

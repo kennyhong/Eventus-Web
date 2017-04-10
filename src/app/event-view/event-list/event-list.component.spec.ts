@@ -4,25 +4,14 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { Event } from '../../shared/models/event.model';
+import { Service, ServiceTag } from '../../shared/models/service.model';
 import { EventListComponent } from './event-list.component';
 
-let expectedEvent = {
-    id: 1,
-    name: 'Test Event',
-    description: 'Test Description',
-    date: '1000-01-01 00:00:00',
-    services: [{
-        id: 1,
-        name: 'Test Service',
-        cost: 100,
-        serviceTags: [{
-            id: 1,
-            name: 'Test Service Tag'
-        }]
-    }]
-};
-
 describe('EventListComponent', () => {
+    let stubServiceTag: ServiceTag;
+    let stubService: Service;
+    let stubEvent: Event;
+
     let comp: EventListComponent;
     let fixture: ComponentFixture<EventListComponent>;
     let eventElement: DebugElement;
@@ -34,10 +23,14 @@ describe('EventListComponent', () => {
     }));
 
     beforeEach(() => {
+        stubServiceTag = new ServiceTag(1, 'Test Service Tag');
+        stubService = new Service(1, 'Test Service', 10, [stubServiceTag]);
+        stubEvent = new Event(1, 'Test Event', 'Test Description', '1000-01-01 00:00:00', [stubService]);
+
         fixture = TestBed.createComponent(EventListComponent);
         comp = fixture.componentInstance;
 
-        comp.events = [expectedEvent];
+        comp.events = [stubEvent];
     });
 
     it('should create component', () => expect(comp).toBeDefined());
@@ -55,6 +48,6 @@ describe('EventListComponent', () => {
         fixture.detectChanges();
         eventElement = fixture.debugElement.query(By.css('.event'));
         eventElement.triggerEventHandler('click', null);
-        expect(selectedEvent).toBe(expectedEvent);
+        expect(selectedEvent).toBe(stubEvent);
     }));
 });

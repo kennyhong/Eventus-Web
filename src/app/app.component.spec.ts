@@ -9,6 +9,7 @@ import { By }           from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RouterTestingModule} from '@angular/router/testing';
+import { FormsModule }   from '@angular/forms';
 
 describe('AppComponent', function () {
   let de: DebugElement;
@@ -23,7 +24,10 @@ describe('AppComponent', function () {
         EventListComponent,
         EventDetailComponent
         ],
-      imports: [RouterTestingModule]
+      imports: [
+          RouterTestingModule,
+          FormsModule
+      ]
     })
     .compileComponents();
   }));

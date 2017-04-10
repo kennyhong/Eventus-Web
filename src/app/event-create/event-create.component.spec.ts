@@ -17,7 +17,7 @@ let stubFormData: EventCreateForm = {
 };
 
 class StubEventService {
-    addEvent(event: EventParams): Observable<Event> {
+    createEvent(event: EventParams): Observable<Event> {
         let newEvent = new Event(1, event.name, event.description, event.date, []);
         return Observable.of(newEvent);
     }

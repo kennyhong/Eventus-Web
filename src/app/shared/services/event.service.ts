@@ -6,50 +6,150 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
-import { Event, EventParams } from '../models/event.model';
-
+import { Event, EventParams, Invoice } from '../models/event.model';
+import { Service, ServiceTag } from '../models/service.model';
 
 @Injectable()
 export class EventService {
-    headers = new Headers({ 'Content-Type': 'application/json' });
-    options = new RequestOptions({ headers: this.headers });
-
-    private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';  // URL to web API
+    private eventsUrl = 'http://eventus.us-west-2.elasticbeanstalk.com/api/events';
+    private headers = new Headers({ 'Content-Type': 'application/json' });
+    private options = new RequestOptions({ headers: this.headers });
 
     constructor(private http: Http) {}
 
+    createEvent(params: EventParams): Observable<Event> {
+        let body = JSON.stringify(params);
+
+        return this.http.post(this.eventsUrl, body, this.options)
+            .map(this.extractEvent)
+            .catch(this.handleError);
+    }
+
+    getEvent(id: number): Observable<Event> {
+        return this.http.get(this.eventsUrl + '/' + id)
+            .map(this.extractEvent)
+            .catch(this.handleError);
+    }
+
+    getEventWithInvoice(id: number): Observable<Event> {
+        return this.http.get(this.eventsUrl + '/' + id + '/invoice')
+            .map(this.extractEvent)
+            .catch(this.handleError);
+    }
+
     getEvents(): Observable<Event[]> {
         return this.http.get(this.eventsUrl)
-            .map(this.extractData)
+            .map(this.extractEvents)
             .catch(this.handleError);
     }
 
-    getEvent(id: Number): Observable<Event> {
-        return this.http.get(this.eventsUrl + '/' + id)
-            .map(this.extractData)
+    updateEvent(eventId: number, params: EventParams): Observable<Event> {
+        let body = JSON.stringify(params);
+
+        return this.http.put(this.eventsUrl + '/' + eventId, body, this.options)
+            .map(this.extractEvent)
             .catch(this.handleError);
     }
 
-    addEvent(event: EventParams): Observable<Event> {
-        let headers = new Headers({ 'Content-type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-
-        let json = JSON.stringify(event);
-
-        return this.http.post(this.eventsUrl, json, options)
-            .map(this.extractData)
+    deleteEvent(eventId: number): Observable<any> {
+        return this.http.delete(this.eventsUrl + '/' + eventId, this.options)
+            .map(this.extractSuccess)
             .catch(this.handleError);
     }
 
-    deleteEvent(id: string): Observable<Event> {
-        return this.http.delete(this.eventsUrl + '/' + id, this.options)
-            .map(this.extractData)
+    addService(eventId: number, serviceId: number): Observable<boolean> {
+        return this.http.post(this.eventsUrl + '/' + eventId + '/services/' + serviceId, {}, this.options)
+            .map((res: Response) => {
+                let body = res.json();
+
+                if (body && body.data && !body.error) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
             .catch(this.handleError);
     }
 
-    private extractData(res: Response) {
+    removeService(eventId: number, serviceId: number): Observable<boolean> {
+        return this.http.delete(this.eventsUrl + '/' + eventId + '/services/' + serviceId, this.options)
+            .map((res: Response) => {
+                let body = res.json();
+
+                if (body && body.data && !body.error) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+            .catch(this.handleError);
+    }
+
+    private extractEvent(res: Response): Event {
+        let event: Event;
+        let invoice: Invoice;
         let body = res.json();
-        return body.data || {};
+
+        if (body && body.data && !body.error) {
+            let data = body.data;
+            let services: Service[] = [];
+
+            for (let service of data.services) {
+                let serviceTags: ServiceTag[] = [];
+
+                for (let serviceTag of service.service_tags) {
+                    serviceTags.push(new ServiceTag(serviceTag.id, serviceTag.name));
+                }
+                services.push(new Service(service.id, service.name, service.cost, serviceTags));
+            }
+
+            if (data.sub_total && data.tax && data.grand_total) {
+                invoice = {
+                    subTotal: data.sub_total,
+                    tax: data.tax,
+                    grandTotal: data.grand_total
+                };
+            }
+
+            event = new Event(data.id, data.name, data.description, data.date, services, invoice);
+        } else {
+            event = new Event(-1, '', '', '', []);
+        }
+
+        return event;
+    }
+
+    private extractEvents(res: Response): Event[] {
+        let events: Event[] = [];
+        let body = res.json();
+
+        if (body && body.data && !body.error) {
+            for (let event of body.data) {
+                let services: Service[] = [];
+
+                for (let service of event.services) {
+                    let serviceTags: ServiceTag[] = [];
+
+                    for (let serviceTag of service.service_tags) {
+                        serviceTags.push(new ServiceTag(serviceTag.id, serviceTag.name));
+                    }
+                    services.push(new Service(service.id, service.name, service.cost, serviceTags));
+                }
+                events.push(new Event(event.id, event.name, event.description, event.date, services));
+            }
+        }
+
+        return events;
+    }
+
+    private extractSuccess(res: Response): boolean {
+        let body = res.json();
+
+        if (body && body.meta && !body.error) {
+            return body.meta.success;
+        } else {
+            return false;
+        }
     }
 
     private handleError(error: Response | any) {
@@ -62,6 +162,7 @@ export class EventService {
             errMsg = error.message ? error.message : error.toString();
         }
         console.error(errMsg);
+
         return Observable.throw(errMsg);
     }
 }

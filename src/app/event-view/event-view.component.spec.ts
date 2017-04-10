@@ -1,8 +1,5 @@
-import { EventService } from '../shared/services/event.service';
-import { EventViewComponent } from './event-view.component';
-import { EventListComponent } from './event-list/event-list.component';
-import { EventDetailComponent } from './event-detail/event-detail.component';
 import { HttpModule } from '@angular/http';
+import { FormsModule }   from '@angular/forms';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
@@ -10,30 +7,34 @@ import 'rxjs/add/observable/of';
 import { } from '@types/jasmine';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-let stubEvent = {
-    id: 1,
-    name: 'Test Event',
-    description: 'Test Description',
-    date: '1000-01-01 00:00:00',
-    services: [{
-        id: 1,
-        name: 'Test Service',
-        cost: 100,
-        serviceTags: [{
-            id: 1,
-            name: 'Test Service Tag'
-        }]
-    }]
-};
+import { EventService } from '../shared/services/event.service';
+import { ServiceService } from '../shared/services/service.service';
+import { EventViewComponent } from './event-view.component';
+import { EventListComponent } from './event-list/event-list.component';
+import { EventDetailComponent } from './event-detail/event-detail.component';
+
+import { Event, Invoice } from '../shared/models/event.model';
+import { Service, ServiceTag } from '../shared/models/service.model';
+
+let stubEvents: Event[];
 
 class StubEventService {
-    stubEvents = [stubEvent, stubEvent];
     getEvents() {
-        return Observable.of(this.stubEvents);
+        return Observable.of(stubEvents);
+    }
+
+    getEventWithInvoice() {
+        return Observable.of(stubEvents[0]);
     }
 }
 
+class StubServiceService {}
+
 describe('EventViewComponent', () => {
+    let stubServiceTag: ServiceTag;
+    let stubService: Service;
+    let stubEvent: Event;
+
     let comp: EventViewComponent;
     let fixture: ComponentFixture<EventViewComponent>;
 
@@ -44,14 +45,29 @@ describe('EventViewComponent', () => {
                 EventListComponent,
                 EventDetailComponent
             ],
-            providers: [ {provide: EventService, useClass: StubEventService} ],
+            providers: [
+                { provide: EventService, useClass: StubEventService },
+                { provide: ServiceService, useClass:  StubServiceService }
+            ],
             imports: [
-                HttpModule
+                HttpModule,
+                FormsModule
             ]
         }).compileComponents();
     }));
 
     beforeEach(() => {
+        let invoice: Invoice  = {
+            subTotal: 10,
+            tax: 1.30,
+            grandTotal: 11.30
+        };
+        stubServiceTag = new ServiceTag(1, 'Test Service Tag');
+        stubService = new Service(1, 'Test Service', 10, [stubServiceTag]);
+        stubEvent = new Event(1, 'Test Event', 'Test Description', '1000-01-01 00:00:00', [stubService], invoice);
+
+        stubEvents = [stubEvent, stubEvent];
+
         fixture = TestBed.createComponent(EventViewComponent);
         comp = fixture.componentInstance;
     });
