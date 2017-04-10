@@ -14,10 +14,17 @@
             </div>
         </div>
         <div align="right">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invoiceModal">
-                View Invoice
-            </button>
-            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
+            <span *ngIf="event.invoice !== undefined">
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invoiceModal">
+                    View Invoice
+                </button>
+            </span>
+            <span *ngIf="event.invoice === undefined">
+                <button type="button" disabled class="btn btn-seconday btn-sm">
+                    View Invoice
+                </button>
+            </span>
+            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices(); loadServiceTags()" data-toggle="modal" data-target="#serviceList">
                 Add New Services
             </button>
             <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
