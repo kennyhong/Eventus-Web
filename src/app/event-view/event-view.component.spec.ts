@@ -13,7 +13,7 @@ import { EventViewComponent } from './event-view.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
 
-import { Event } from '../shared/models/event.model';
+import { Event, Invoice } from '../shared/models/event.model';
 import { Service, ServiceTag } from '../shared/models/service.model';
 
 let stubEvents: Event[];
@@ -21,6 +21,10 @@ let stubEvents: Event[];
 class StubEventService {
     getEvents() {
         return Observable.of(stubEvents);
+    }
+
+    getEventWithInvoice() {
+        return Observable.of(stubEvents[0]);
     }
 }
 
@@ -53,9 +57,14 @@ describe('EventViewComponent', () => {
     }));
 
     beforeEach(() => {
+        let invoice: Invoice  = {
+            subTotal: 10,
+            tax: 1.30,
+            grandTotal: 11.30
+        };
         stubServiceTag = new ServiceTag(1, 'Test Service Tag');
         stubService = new Service(1, 'Test Service', 10, [stubServiceTag]);
-        stubEvent = new Event(1, 'Test Event', 'Test Description', '1000-01-01 00:00:00', [stubService]);
+        stubEvent = new Event(1, 'Test Event', 'Test Description', '1000-01-01 00:00:00', [stubService], invoice);
 
         stubEvents = [stubEvent, stubEvent];
 
