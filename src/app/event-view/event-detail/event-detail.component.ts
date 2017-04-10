@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Event, EventParams } from '../../shared/models/event.model';
 import { EventService } from '../../shared/services/event.service';
-import { Service } from '../../shared/models/service.model';
-import { ServiceService } from '../../shared/services/service.service';
+import { Service, ServiceTag } from '../../shared/models/service.model';
+import { ServiceService, ServiceQuery } from '../../shared/services/service.service';
 import * as moment from 'moment';
 
 export interface EventEditForm {
@@ -11,6 +11,11 @@ export interface EventEditForm {
     description: string;
     date: string;
     time: string;
+}
+
+interface SortForm {
+    orderBy: any;
+    order: any;
 }
 
 @Component({
@@ -25,8 +30,11 @@ export class EventDetailComponent {
     errorMessage: {};
     emptyEvent: Event;
     services: Service[] = [];
+    serviceTags: ServiceTag[] = [];
     selectedService: Service;
     formData: EventEditForm;
+    sortForm: SortForm;
+    selectedTags: number[];
     eventParams: EventParams;
 
     constructor(private eventService: EventService, private serviceService: ServiceService) {
@@ -36,6 +44,11 @@ export class EventDetailComponent {
             date: '',
             time: ''
         };
+        this.sortForm = {
+            orderBy: 'name',
+            order: 'ASC'
+        };
+        this.selectedTags = [];
         this.eventParams = { name: '', description: '', date: '' };
     }
 
@@ -46,14 +59,46 @@ export class EventDetailComponent {
                     this.reloadEvents.emit();
                     this.onSelected.emit(this.emptyEvent);
                 },
-                error => this.errorMessage = <any>error);
+                error => this.errorMessage = error
+            );
+    }
+
+    resetServiceFilters() {
+        this.sortForm = {
+            orderBy: 'name',
+            order: 'ASC'
+        };
+        this.selectedTags = [];
     }
 
     loadServices() {
-        this.serviceService.getServices()
+        let query: ServiceQuery;
+        let currServices: number[] = [];
+
+        for (let service of this.event.services) {
+            currServices.push(service.id);
+        }
+
+        query = {
+            except_ids: currServices,
+            tag_ids: this.selectedTags,
+            order_by: this.sortForm.orderBy,
+            order: this.sortForm.order
+        };
+
+        this.serviceService.getServices(query)
             .subscribe(
-            services => this.services = services,
-            error => this.errorMessage = <any>error);
+                services => this.services = services,
+                error => this.errorMessage = <any>error
+            );
+    }
+
+    loadServiceTags() {
+        this.serviceService.getServiceTags()
+            .subscribe(
+                serviceTags => this.serviceTags = serviceTags,
+                error => this.errorMessage = error
+            );
     }
 
     selectService(service: Service) {
@@ -63,29 +108,29 @@ export class EventDetailComponent {
     addService(serviceId: number) {
         this.eventService.addService(this.event.id, serviceId)
             .subscribe(
-            success => {
-                this.reloadSelectedEvent();       
-            },
-            error => this.errorMessage = <any>error);
+                () => this.reloadSelectedEvent(),
+                error => this.errorMessage = <any>error
+            );
     }
 
     removeService(serviceId: number) {
         this.eventService.removeService(this.event.id, serviceId)
             .subscribe(
-            success => {
-                this.reloadSelectedEvent();
-            },
-            error => this.errorMessage = <any>error);
+                () => this.reloadSelectedEvent(),
+                error => this.errorMessage = <any>error
+            );
     }
 
     reloadSelectedEvent() {        
         this.eventService.getEventWithInvoice(this.event.id)
             .subscribe(
-            event => {
-                this.reloadEvents.emit();
-                this.event = event;
-            },
-            error => console.error(error));
+                event => {
+                    this.reloadEvents.emit();
+                    this.event = event;
+                    this.loadServices();
+                },
+                error => console.error(error)
+            );
     }
 
     updateEvent() {
@@ -99,7 +144,8 @@ export class EventDetailComponent {
                     this.reloadEvents.emit();
                     this.event = event;
                 },
-                error => console.error(error));
+                error => console.error(error)
+            );
     }
 
     private validateInput(): boolean {
@@ -136,7 +182,7 @@ export class EventDetailComponent {
     }
 
     private populateForm() {
-        var dateTime = this.event.date.split(' ');
+        let dateTime = this.event.date.split(' ');
 
         this.formData.name = this.event.name;
         this.formData.description = this.event.description;

@@ -14,10 +14,17 @@
             </div>
         </div>
         <div align="right">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invoiceModal">
-                View Invoice
-            </button>
-            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
+            <span *ngIf="event.invoice !== undefined">
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invoiceModal">
+                    View Invoice
+                </button>
+            </span>
+            <span *ngIf="event.invoice === undefined">
+                <button type="button" disabled class="btn btn-seconday btn-sm">
+                    View Invoice
+                </button>
+            </span>
+            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices(); loadServiceTags()" data-toggle="modal" data-target="#serviceList">
                 Add New Services
             </button>
             <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
@@ -44,6 +51,42 @@
                 </button>
             </div>
             <div class="modal-body">
+                <form #orderForm="ngForm" class="form-inline">
+                    <div class="form-group">
+                        <label for="serviceOrderBy">Sort by</label>
+                        <select class="form-control" id="serviceOrderBy"
+                                name="serviceOrderBy" [(ngModel)]="sortForm.orderBy">
+                            <option value="name">Name</option>
+                            <option value="cost">Cost</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceOrder">in</label>
+                        <select class="form-control" id="serviceOrder"
+                                name="serviceOrder" [(ngModel)]="sortForm.order">
+                            <option value="ASC">Ascending</option>
+                            <option value="DESC">Descending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceOrder">order.</label>
+                    </div>
+                </form>
+                <form #filterForm="ngForm">
+                    <div class="form-group">
+                        <label for="selectedTags">Filter by Tags</label>
+                        <select multiple class="form-control" id="selectedTags"
+                                name="selectedTags" [(ngModel)]="selectedTags">
+                            <option *ngFor="let tag of serviceTags" [ngValue]="tag.id">
+                                {{tag.name}}
+                            </option>
+                        </select>
+                    </div>
+                </form>
+                <div align="right" style="margin-bottom: 10px">
+                    <input type="button" class="btn btn-default" value="Reset" (click)="resetServiceFilters(); loadServices()">
+                    <input type="button" class="btn btn-default" value="Apply" (click)="loadServices()">
+                </div>
                 <div class="list-group">
                     <div *ngFor="let service of services" class="list-group-item service">
                         <h3 class="list-group-item-heading">{{service.name}}</h3>

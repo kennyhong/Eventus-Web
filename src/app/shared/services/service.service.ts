@@ -5,7 +5,15 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
-import { Service, ServiceTag} from '../models/service.model';
+import { Service, ServiceTag } from '../models/service.model';
+
+export interface ServiceQuery {
+    ids?: number[];
+    except_ids?: number[];
+    tag_ids?: number[];
+    order?: string;
+    order_by?: string;
+}
 
 @Injectable()
 export class ServiceService {
@@ -24,8 +32,13 @@ export class ServiceService {
             .catch(this.handleError);
     }
 
-    getServices(): Observable<Service[]> {
-        return this.http.get(this.servicesUrl)
+    getServices(query?: ServiceQuery): Observable<Service[]> {
+        let queryString = '';
+        if (query) {
+            queryString = this.generateQueryString(query);
+        }
+
+        return this.http.get(this.servicesUrl + queryString)
             .map(this.extractServices)
             .catch(this.handleError);
     }
@@ -36,8 +49,13 @@ export class ServiceService {
             .catch(this.handleError);
     }
 
-    getServiceTags(): Observable<ServiceTag[]> {
-        return this.http.get(this.serviceTagsUrl)
+    getServiceTags(query?: ServiceQuery): Observable<ServiceTag[]> {
+        let queryString = '';
+        if (query) {
+            queryString = this.generateQueryString(query);
+        }
+
+        return this.http.get(this.serviceTagsUrl + queryString)
             .map(this.extractServiceTags)
             .catch(this.handleError);
     }
@@ -125,5 +143,36 @@ export class ServiceService {
         console.error(errMsg);
 
         return Observable.throw(errMsg);
+    }
+
+    private generateQueryString(query: ServiceQuery): string {
+        let subQueries: string[] = [];
+
+        if (query.ids && query.ids.length > 0) {
+            subQueries.push('filter-ids=' + query.ids.join());
+        }
+
+        if (query.except_ids && query.except_ids.length > 0) {
+            subQueries.push('filter-except-ids=' + query.except_ids.join());
+        }
+
+        if (query.tag_ids && query.tag_ids.length > 0) {
+            subQueries.push('filter-tag-ids=' + query.tag_ids.join());
+        }
+
+        if (query.order && query.order !== '') {
+            subQueries.push('order=' + query.order);
+        }
+
+        if (query.order_by && query.order_by !== '') {
+            subQueries.push('order-by=' + query.order_by);
+        }
+
+        if (subQueries.length > 0) {
+            return '?' + subQueries.join('&');
+        } else {
+            return '';
+        }
+
     }
 }
