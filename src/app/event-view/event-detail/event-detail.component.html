@@ -17,6 +17,12 @@
             <button type="button" class="btn btn-primary btn-sm" (click)="loadServices(); loadServiceTags()" data-toggle="modal" data-target="#serviceList">
                 View Services
             </button>
+            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#invoiceModal">
+                View Invoice
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="loadServices()" data-toggle="modal" data-target="#serviceList">
+                Add New Services
+            </button>
             <button type="button" class="btn btn-default btn-sm" (click)="populateForm()" data-toggle="modal" data-target="#editModal">
                 Edit
             </button>
@@ -207,3 +213,37 @@
         </div>
     </div>
 </div>
+
+<div *ngIf="event !== undefined && event.invoice !== undefined" class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="invoiceModalLabel"><b>Event Invoice</b></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <font size="30">
+                <div class="modal-body">
+                    <p style="text-align:left;">
+                        Sub Total:
+                        <span style="float:right;">{{event.invoice.subTotal}}</span>
+                    </p>
+                    <p style="text-align:left;">
+                        Tax:
+                        <span style="float:right;">{{event.invoice.tax}}</span>
+                    </p>
+                    <hr style="background:#000000; border:0; height:4px" />
+                    <p style="text-align:left;">
+                        Grand Total:
+                        <span style="float:right;">{{event.invoice.grandTotal}}</span>
+                    </p>
+                </div>
+            </font>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
